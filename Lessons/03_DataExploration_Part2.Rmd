@@ -38,9 +38,10 @@ colnames(USGS.flow.data)
 str(USGS.flow.data)
 dim(USGS.flow.data)
 
-# Check our date column
+# Check our date column as csv files ALWAYS stores date as character. 
 class(USGS.flow.data$datetime)
 
+# Change date from character to date format. This important as we may want to order data by date.
 USGS.flow.data$datetime <- as.Date(USGS.flow.data$datetime, format = "%Y-%m-%d") 
 class(USGS.flow.data$datetime)
 
@@ -70,24 +71,24 @@ ggplot(USGS.flow.data, aes(x = discharge.mean.approval)) +
 Visualize distributions of values for continuous numerical variables. What is happening in each line of code? Insert a comment above each line.
 
 ```{r, fig.height = 3, fig.width = 4}
-#
+#Plot a histogram of the histogram of discharge.mean
 ggplot(USGS.flow.data) +
   geom_histogram(aes(x = discharge.mean))
 
-#
+#Change binwidth to 10
 ggplot(USGS.flow.data) +
   geom_histogram(aes(x = discharge.mean), binwidth = 10)
 
-#
+# Change binwidth to 20
 ggplot(USGS.flow.data) +
   geom_histogram(aes(x = discharge.mean), bins = 20)
 
-#
+# This limit the x scale to 0 - 500
 ggplot(USGS.flow.data, aes(x = discharge.mean)) +
   geom_histogram(binwidth = 10) + 
   scale_x_continuous(limits = c(0, 500))
   
-#
+# Plots gage height mean
 ggplot(USGS.flow.data) +
   geom_histogram(aes(x = gage.height.mean))
 
