@@ -1,6 +1,6 @@
 ---
 title: "Assignment 2: Coding Basics"
-author: "Student Name"
+author: "Sashoy Milton"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -30,12 +30,24 @@ This exercise accompanies the lessons in Environmental Data Analytics on coding 
 
 4.  Insert comments in your code to describe what you are doing.
 
-```{r}
-#1. 
+```{r sequence, mean and median}
 
-#2. 
+#1. The function seq generates number sequences
 
-#3. 
+num_seq <- seq(from = 1, to = 100)
+
+
+#2. Find the mean of the sequence
+
+mean_seq <- mean(num_seq)
+
+#3. Find the median of the sequence
+
+median_seq <- median(num_seq)
+
+#4. Check if the mean is greater then the median
+
+mean_seq>median_seq
 
 ```
 
@@ -49,19 +61,48 @@ This exercise accompanies the lessons in Environmental Data Analytics on coding 
 
 8.  Label the columns of your data frame with informative titles.
 
-```{r}
+```{r vectors, matrix and functions}
 
+student.names <- c("Peter", "Shantoy", "Ariel", "Larry") #Vector type: character
+test_scores <- c(67, 85, 34, 92) #Vector type: numeric
+pass_fail <-c(TRUE,TRUE,FALSE,TRUE) #Vector type: logical
+
+
+#Create data frame
+gradebook = data.frame(student.names,test_scores,pass_fail)
+gradebook
+
+
+#Assign column names
+column_names <- c("Student names", "Test score/100", "Pass?")
+
+names(gradebook) <- column_names
+gradebook
 ```
 
 9.  QUESTION: How is this data frame different from a matrix?
 
-> Answer:
+> Answer: A data frame unlike a matrix contains several vector types. As seen in the dataframe above which contains character, numeric and logical vectors. Conversely, a matrix can only store one type of data even though it is two dimensional.
 
 10. Create a function with an if/else statement. Your function should take a **vector** of test scores and print (not return) whether a given test score is a passing grade of 50 or above (TRUE or FALSE). You will need to choose either the `if` and `else` statements or the `ifelse` statement. 
 
 11. Apply your function to the vector with test scores that you created in number 5.
 
 ```{r}
+
+check_pass <- function(vector) {
+  if (vector>50) {
+    print(TRUE)
+  }
+  else {
+    print(FALSE)
+  }
+}
+
+check_pass(test_scores)
+
+####
+
 
 ```
 
