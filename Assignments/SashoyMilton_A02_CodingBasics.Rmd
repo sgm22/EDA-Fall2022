@@ -11,15 +11,6 @@ editor_options:
 
 This exercise accompanies the lessons in Environmental Data Analytics on coding basics.
 
-## Directions
-
-1.  Rename this file `<FirstLast>_A02_CodingBasics.Rmd` (replacing `<FirstLast>` with your first and last name).
-2.  Change "Student Name" on line 3 (above) with your name.
-3.  Work through the steps, **creating code and output** that fulfill each instruction.
-4.  Be sure to **answer the questions** in this assignment document.
-5.  When you have completed the assignment, **Knit** the text and code into a single PDF file.
-6.  After Knitting, submit the completed exercise (PDF file) to Sakai.
-
 ## Basics Day 1
 
 1.  Generate a sequence of numbers from one to 100, increasing by fours. Assign this sequence a name.
@@ -90,22 +81,18 @@ gradebook
 
 ```{r}
 
-check_pass <- function(vector) {
-  if (vector>50) {
-    print(TRUE)
-  }
-  else {
-    print(FALSE)
-  }
+check_pass <- function(x=vector()) {
+  result = ifelse (x>50, TRUE, FALSE)  #save results in variable 'result"
+  
+print(result) #Print result
 }
 
 check_pass(test_scores)
-
-####
-
 
 ```
 
 12. QUESTION: Which option of `if` and `else` vs. `ifelse` worked? Why?
 
 > Answer:
+
+The function 'ifelse' worked because it did not close the loop after testing the condition on the first variable in the vector.It instead evaluates the condition against the variables in the vector one by one in a loop.
