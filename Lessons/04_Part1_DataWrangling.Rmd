@@ -36,7 +36,7 @@ str(NTL.phys.data)
 dim(NTL.phys.data)
 
 class(NTL.phys.data$sampledate)
-# Format sampledate as date
+# Format sampledate as date seen in the imported element this includes the /. Be mindful that month, day and year could be separated by -. Indicate that this is the separator in this case.
 NTL.phys.data$sampledate <- as.Date(NTL.phys.data$sampledate, format = "%m/%d/%y")
 ```
 
