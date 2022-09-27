@@ -33,22 +33,25 @@ library(readr)
 
 #Load datasets
 
-ECOTOX_Neonicotinoids_Insects_raw <- read_csv("Assignment 3/ECOTOX_Neonicotinoids_Insects_raw.csv")
-ECOTOX_Neonicotinoids_Insects_raw
-NEON_NIWO_Litter_massdata_2018_08_raw <- read_csv("Assignment 3/NEON_NIWO_Litter_massdata_2018-08_raw.csv")
-NEON_NIWO_Litter_massdata_2018_08_raw
+getwd() # Check the current working directory for this assignment
+
+Neonics <- read.csv("./ECOTOX_Neonicotinoids_Insects_raw.csv", stringsAsFactors = TRUE)
+Neonics
+Litter <- read.csv("./NEON_NIWO_Litter_massdata_2018-08_raw.csv",stringsAsFactors = TRUE)
+Litter
 ```
 
 ## Learn about your system
 
 2.  The neonicotinoid dataset was collected from the Environmental Protection Agency's ECOTOX Knowledgebase, a database for ecotoxicology research. Neonicotinoids are a class of insecticides used widely in agriculture. The dataset that has been pulled includes all studies published on insects. Why might we be interested in the ecotoxicology of neonicotinoids on insects? Feel free to do a brief internet search if you feel you need more background information.
 
-
-> Answer:
+> Answer: We might be interested in the ecotoxicology of neonicotinods as it affects the central nervous system of insects, resulting in paralysis and death. It also has widespread agricultural use and is licensed for use in over 100 countries. This means that if the chemical class (neonicotinods) is affecting nontarget species then it has the potential to cause a significant decline in insect populations causing ecosystems to shift to a state of imbalance.
 
 3.  The Niwot Ridge litter and woody debris dataset was collected from the National Ecological Observatory Network, which collectively includes 81 aquatic and terrestrial sites across 20 ecoclimatic domains. 32 of these sites sample forest litter and woody debris, and we will focus on the Niwot Ridge long-term ecological research (LTER) station in Colorado. Why might we be interested in studying litter and woody debris that falls to the ground in forests? Feel free to do a brief internet search if you feel you need more background information.
 
-> Answer:
+> Answer: It is important for us to understand litter and woody debris that falls to the ground as it gives us insight into the nutrients available in the soil and the overall health of the soil in the forest. In addition, the information provides mass details on the plant functional groups.
+
+
 
 4.  How is litter and woody debris sampled as part of the NEON network? Read the NEON_Litterfall_UserGuide.pdf document to learn more. List three pieces of salient information about the sampling methods here:
 
@@ -63,19 +66,24 @@ NEON_NIWO_Litter_massdata_2018_08_raw
 
 ```{r}
 
+dim(Neonics)
+
 ```
+> Answer: There are 4623 rows and 30 columns in the Neonics dataset.
 
 6.  Using the `summary` function on the "Effect" column, determine the most common effects that are studied. Why might these effects specifically be of interest?
 
 ```{r}
-
+summary(Neonics$Effect)
 ```
 
-> Answer:
+> Answer: The most common effects studied are population, mortality, behavior and feeding behavior. These effects are specifically of interest because
 
 7.  Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.
 
 ```{r}
+
+summary(Neonics$Species.Common.Name)
 
 ```
 
