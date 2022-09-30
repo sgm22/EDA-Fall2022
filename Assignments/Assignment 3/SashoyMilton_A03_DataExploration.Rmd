@@ -2,9 +2,9 @@
 title: 'Assignment 3: Data Exploration'
 author: "Sashoy Milton"
 output:
-  word_document: default
   pdf_document: default
-geometry: margin=2.54cm
+  word_document: default
+geometry: margin=1in
 ---
 
 ## OVERVIEW
@@ -13,11 +13,22 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Ex
 
 The completed exercise is due on Sept 30th.
 
+```{r setup, include=FALSE}
+
+library(formatR)
+library (knitr)
+
+opts_chunk$set(tidy.opts = list(width.cutoff= 60),
+                      tidy=TRUE)
+
+```
+
+
 ## Set up your R session
 
 1.  Check your working directory, load necessary packages (tidyverse), and upload two datasets: the ECOTOX neonicotinoid dataset (ECOTOX_Neonicotinoids_Insects_raw.csv) and the Niwot Ridge NEON dataset for litter and woody debris (NEON_NIWO_Litter_massdata_2018-08_raw.csv). Name these datasets "Neonics" and "Litter", respectively. Be sure to include the subcommand to read strings in as factors.
 
-```{r,  message = FALSE}
+```{r, results='hide', message=FALSE}
 
 #Load packages
 
@@ -29,9 +40,11 @@ library (lubridate)
 
 getwd() # Check the current working directory for this assignment
 
-Neonics <- read.csv("./ECOTOX_Neonicotinoids_Insects_raw.csv", stringsAsFactors = TRUE)
+Neonics <- read.csv("./ECOTOX_Neonicotinoids_Insects_raw.csv", 
+                    stringsAsFactors = TRUE)
 Neonics
-Litter <- read.csv("./NEON_NIWO_Litter_massdata_2018-08_raw.csv",stringsAsFactors = TRUE)
+Litter <- read.csv("./NEON_NIWO_Litter_massdata_2018-08_raw.csv",
+                   stringsAsFactors = TRUE)
 Litter
 ```
 
@@ -62,9 +75,12 @@ Litter
 
 ```{r}
 
+options(width = 60)
+matrix(runif(100), ncol = 20)
+
 #Explore data
 
-summary(Neonics)
+summary.data.frame(Neonics)
 head(Neonics)
 tail (Neonics)
 
@@ -107,6 +123,9 @@ class(Neonics$Conc.1..Author.)
 9.  Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year.
 
 ```{r}
+
+options(width = 60)
+matrix(runif(100), ncol = 20)
 
 class(Neonics$Publication.Year) # Check the class of the Publication Year variable
 
@@ -197,7 +216,8 @@ unique(Litter$collectDate)
 
 unique(Litter$plotID)
 
-#View data frame with unique to compare the result to what was obtained by summary
+#View data frame with unique to compare the result to what was obtained by 
+#summary
 
 # unique(Litter)
 ```
