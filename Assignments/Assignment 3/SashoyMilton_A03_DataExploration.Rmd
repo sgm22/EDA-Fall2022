@@ -3,8 +3,6 @@ title: 'Assignment 3: Data Exploration'
 author: "Sashoy Milton"
 output:
   pdf_document: default
-  word_document: default
-geometry: margin=1in
 ---
 
 ## OVERVIEW
@@ -14,13 +12,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Ex
 The completed exercise is due on Sept 30th.
 
 ```{r setup, include=FALSE}
-
-library(formatR)
-library (knitr)
-
-opts_chunk$set(tidy.opts = list(width.cutoff= 60),
-                      tidy=TRUE)
-
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
@@ -67,7 +59,7 @@ Litter
 > For spatial sampling
  1.Random selection of tower plots (plots that contain woody vegetation >2m tall) for sampling.
  2.Systematic sampling within each plot (elevated and ground trap deployed for every 400m^2 plot area).
- 3. Trap placement within plots were either randomized or taregeted depending on the vegetation.
+ 3. Trap placement within plots were either randomized or targeted depending on the vegetation.
 
 ## Obtain basic summaries of your data (Neonics)
 
@@ -75,14 +67,11 @@ Litter
 
 ```{r}
 
-options(width = 60)
-matrix(runif(100), ncol = 20)
-
 #Explore data
 
-summary.data.frame(Neonics)
-head(Neonics)
-tail (Neonics)
+View(Neonics)
+#head(Neonics) #Commented out for ease of viewing of question output
+#tail(Neonics) #Commented out for ease of viewing of question output
 
 # Obtain the dimensions of the dataset
 dim(Neonics)
@@ -123,10 +112,6 @@ class(Neonics$Conc.1..Author.)
 9.  Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year.
 
 ```{r}
-
-options(width = 60)
-matrix(runif(100), ncol = 20)
-
 class(Neonics$Publication.Year) # Check the class of the Publication Year variable
 
 #Generate plot
