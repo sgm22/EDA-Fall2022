@@ -15,6 +15,19 @@ The completed exercise is due on Sept 30th.
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Note: I tried to use the following suggested code to make the output of the functions
+summary, head and tail not run of the pdf but it did not work. It actually additionally
+make my code flow off the page. I was advised to include it here as note that I did try but
+was unsuccessful in getting it to work. I did not include in a chunk because I did not want
+it to run as it causes additional issues as mentioned above.
+
+library(formatR)
+
+r set-up, include = FALSE
+
+knitr::opts_chunk$set(tidy.opts=list(width.cutoff = 60), tidy=TRUE, echo=TRUE)
+
+
 
 ## Set up your R session
 
@@ -70,8 +83,9 @@ Litter
 #Explore data
 
 View(Neonics)
-#head(Neonics) #Commented out for ease of viewing of question output
-#tail(Neonics) #Commented out for ease of viewing of question output
+#summary(Neonics) #Commented out as I was unable to get the output to not run off the page.
+#head(Neonics) #Commented out as I was unable to get the output to not run off the page.
+#tail(Neonics) #Commented out as I was unable to get the output to not run off the page.
 
 # Obtain the dimensions of the dataset
 dim(Neonics)
