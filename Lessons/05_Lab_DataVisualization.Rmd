@@ -71,9 +71,22 @@ Exercise: build your own scatterplots of PeterPaul.chem.nutrients
 ```{r, fig.height = 3, fig.width = 4, warning = FALSE}
 
 # 1. 
-# Plot surface temperatures by day of  year. 
+# Plot surface temperatures by day of  year.
 # Color your points by year, and facet by lake in two rows.
-# Change the ylab name
+# Change the ylab name 
+
+subset_PeterPaul.chem.nutrients = subset(PeterPaul.chem.nutrients, depth ==0) # Surfacedepth only
+
+subset_PeterPaul.chem.nutrients %>%
+  ggplot(aes(x=daynum,y=temperature_C)) +
+  geom_point(aes(color = year4)) +
+                facet_wrap(vars(lakename), nrow=2) +
+                ylab("Surface Temperarure")
+  
+PeterPaul.chem.nutrients %>%
+  ggplot(aes(day(sampledate), y=temperature_C))
+  geom_line()
+
 
 
 #2. 
@@ -81,10 +94,16 @@ Exercise: build your own scatterplots of PeterPaul.chem.nutrients
 # Change the size of your point to 0.5
 # Change the color palette to magma and play with direction (+- 1), which one makes more sense?
 # Change x axis to include marker/labels every 5 years
-
-
-
-
+  
+  class(PeterPaul.chem.nutrients$sampledate)
+   
+  ggplot(PeterPaul.chem.nutrients, aes(x=sampledate, y=temperature_C, color = depth)) +
+   geom_point(size = 0.5)  +
+   ylab ("Temperature in Celsius") +
+   scale_color_viridis(option = "magma", direction = -1) +
+   scale_x_date(date_breaks = "5 years", date_labels = "%Y")
+ 
+  
 ```
 ## Plotting the relationship between two continuous variables: Scatterplot
 
@@ -97,6 +116,7 @@ Exercise: Plot relationships between air quality measurements
 # Make the points 50 % transparent
 # Add a line of best fit for the linear regression of these variables.
 
+ggplot(EPAair, )
 
 
 
