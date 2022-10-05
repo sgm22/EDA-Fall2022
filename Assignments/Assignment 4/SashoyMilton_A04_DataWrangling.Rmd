@@ -36,15 +36,63 @@ The completed exercise is due on Friday, Oct7th @ 5:00pm.
 
 library(tidyverse)
 library(lubridate)
+library (skimr)
+
+#Check working directory
+
+getwd()
+
+#Load data
+
+EPA.Air.NC18 <- read.csv("./EPAair_O3_NC2018_raw.csv", stringsAsFactors = TRUE)
+EPA.Air.NC19 <- read.csv("./EPAair_O3_NC2019_raw.csv", stringsAsFactors = TRUE)
+EPA.Air.PM25_NC18 <- read.csv("./EPAair_PM25_NC2018_raw.csv", stringsAsFactors = TRUE)
+EPA.Air.PM25_NC19 <- read.csv("./EPAair_PM25_NC2019_raw.csv", stringsAsFactors = TRUE)
 
 ```
 
 2. Explore the dimensions, column names, and structure of the datasets. 
 
 ```{r, message = FALSE}
-#1
 
-#2
+#1. Air Data
+
+############# Explore dimensions #####################
+
+dim(EPA.Air.NC18)
+dim (EPA.Air.NC19)
+
+############# Explore column names and structure of databases ###########
+
+summary(EPA.Air.NC18)
+skim(EPA.Air.NC18)
+head(EPA.Air.NC18)
+tail(EPA.Air.NC18)
+
+summary(EPA.Air.NC19)
+skim(EPA.Air.NC19)
+head(EPA.Air.NC19)
+tail(EPA.Air.NC19)
+
+#2. PM 2.5 Data
+
+############# Explore dimensions #####################
+
+dim(EPA.Air.PM25_NC18)
+dim (EPA.Air.PM25_NC19)
+
+############# Explore column names and structure of databases ###########
+
+summary(EPA.Air.PM25_NC18)
+skim(EPA.Air.PM25_NC18)
+head(EPA.Air.PM25_NC18)
+tail(EPA.Air.PM25_NC18)
+
+summary(EPA.Air.PM25_NC19)
+skim(EPA.Air.PM25_NC19)
+head(EPA.Air.PM25_NC19)
+tail(EPA.Air.PM25_NC19)
+
 ```
 
 ## Wrangle individual datasets to create processed files.
@@ -54,7 +102,10 @@ library(lubridate)
 6. Save all four processed datasets in the Processed folder. Use the same file names as the raw files but replace "raw" with "processed".
 
 ```{r}
-#3
+#3. Change date to date
+
+class(EPA.Air.NC18$Date)
+
 
 #4
 
