@@ -68,7 +68,7 @@ NTL.phys.data.PeterPaul.subset <- select(NTL.phys.data.PeterPaul,
 NTL.nutrient.data.PeterPaul.subset <- select(NTL.nutrient.data.PeterPaul, 
                                              lakename, year4, daynum, month, sampledate, depth:po4)
 
-# write a more succinct line of code to subset the nutrient dataset. 
+# write a more succinct line of code to subset the nutrient data-set. 
 
 ```
 

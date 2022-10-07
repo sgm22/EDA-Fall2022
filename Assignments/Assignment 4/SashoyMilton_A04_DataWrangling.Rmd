@@ -1,34 +1,29 @@
 ---
-title: "Assignment 4: Data Wrangling"
+title: 'Assignment 4: Data Wrangling'
 author: "Sashoy Milton"
-output: pdf_document
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 geometry: margin=2.54cm
 ---
 
 ```{r setup, include=FALSE}
-#This code chunk will tidy your knit PDF files, wrapping long code lines
-#For it to work, the "formatR" package needs to be installed
+knitr::opts_chunk$set(echo = TRUE)
 
-#install.packages('formatR')
-knitr::opts_chunk$set(tidy.opts=list(width.cutoff=80), tidy=TRUE)
 ```
 
 ## OVERVIEW
 
 This exercise accompanies the lessons in Environmental Data Analytics on Data Wrangling 
 
-## Directions
-1.  Rename this file `<FirstLast>_A03_DataExploration.Rmd` (replacing `<FirstLast>` with your first and last name).
-2. Change "Student Name" on line 3 (above) with your name.
-3. Work through the steps, **creating code and output** that fulfill each instruction.
-4. Be sure to **answer the questions** in this assignment document.
-5. When you have completed the assignment, **Knit** the text and code into a single PDF file.
-
-The completed exercise is due on Friday, Oct7th @ 5:00pm.
-
 ## Set up your session 
 
-1. Check your working directory, load the `tidyverse` and `lubridate` packages, and upload all four raw data files associated with the EPA Air dataset, being sure to set string columns to be read in a factors. See the README file for the EPA air datasets for more information (especially if you have not worked with air quality data previously). 
+1. Check your working directory, load the `tidyverse` and `lubridate` packages, 
+and upload all four raw data files associated with the EPA Air dataset, being sure 
+to set string columns to be read in a factors. See the README file for the EPA air 
+datasets for more information (especially if you have not worked with air quality 
+data previously). 
 
 ```{r, load packages, message=FALSE}
 
@@ -37,10 +32,6 @@ The completed exercise is due on Friday, Oct7th @ 5:00pm.
 library(tidyverse)
 library(lubridate)
 library (skimr)
-
-#Check working directory
-
-getwd()
 
 #Load data
 
@@ -65,12 +56,14 @@ dim (EPA.Air.NC19)
 ############# Explore column names and structure of databases ###########
 
 summary(EPA.Air.NC18)
-skim(EPA.Air.NC18)
+# skim(EPA.Air.NC18)
 head(EPA.Air.NC18)
 tail(EPA.Air.NC18)
 
+#########################
+
 summary(EPA.Air.NC19)
-skim(EPA.Air.NC19)
+# skim(EPA.Air.NC19)
 head(EPA.Air.NC19)
 tail(EPA.Air.NC19)
 
@@ -84,12 +77,15 @@ dim (EPA.Air.PM25_NC19)
 ############# Explore column names and structure of databases ###########
 
 summary(EPA.Air.PM25_NC18)
-skim(EPA.Air.PM25_NC18)
+# skim(EPA.Air.PM25_NC18)
 head(EPA.Air.PM25_NC18)
 tail(EPA.Air.PM25_NC18)
 
+
+#########################
+
 summary(EPA.Air.PM25_NC19)
-skim(EPA.Air.PM25_NC19)
+# skim(EPA.Air.PM25_NC19)
 head(EPA.Air.PM25_NC19)
 tail(EPA.Air.PM25_NC19)
 
@@ -97,66 +93,210 @@ tail(EPA.Air.PM25_NC19)
 
 ## Wrangle individual datasets to create processed files.
 3. Change date to date
-4. Select the following columns: Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE
-5. For the PM2.5 datasets, fill all cells in AQS_PARAMETER_DESC with "PM2.5" (all cells in this column should be identical).
-6. Save all four processed datasets in the Processed folder. Use the same file names as the raw files but replace "raw" with "processed".
+
+4. Select the following columns: Date, DAILY_AQI_VALUE, Site.Name, 
+AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE
+
+5. For the PM2.5 datasets, fill all cells in AQS_PARAMETER_DESC with "PM2.5" 
+(all cells in this column should be identical).
+
+6. Save all four processed datasets in the Processed folder. Use the same file
+names as the raw files but replace "raw" with "processed".
 
 ```{r}
 #3. Change date to date
 
-class(EPA.Air.NC18$Date)
+########################### Air Data #########################
+
+class(EPA.Air.NC18$Date)  #Check class of variable
+
+EPA.Air.NC18$Date <- mdy(EPA.Air.NC18$Date)
+class(EPA.Air.NC18$Date) #Check change of class
+View(EPA.Air.NC18)
+
+#########################
+
+class(EPA.Air.NC19$Date) #Check class of variable
+
+EPA.Air.NC19$Date <- mdy(EPA.Air.NC19$Date)
+class(EPA.Air.NC19$Date) #Check change of class
+View(EPA.Air.NC19)
+
+########################## PM 2.5 ##########################
+
+class(EPA.Air.PM25_NC18$Date) #Check class of variable
+
+EPA.Air.PM25_NC18$Date <- mdy(EPA.Air.PM25_NC18$Date)
+class(EPA.Air.PM25_NC18$Date) #Check change of class
+View(EPA.Air.PM25_NC18)
+#########################
+  
+class(EPA.Air.PM25_NC19$Date) #Check class of variable
+
+EPA.Air.PM25_NC19$Date <- mdy(EPA.Air.PM25_NC19$Date)
+class(EPA.Air.PM25_NC19$Date)  #Check change of class
+View(EPA.Air.PM25_NC19)
+
+#4. Select Columns
+
+#Select the following columns: Date, DAILY_AQI_VALUE, Site.Name,
+#AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE
+
+########################### Air Data #########################
+
+processed_EPA.Air.NC18 <- EPA.Air.NC18[c("Date", "DAILY_AQI_VALUE", "Site.Name", 
+            "AQS_PARAMETER_DESC", "COUNTY","SITE_LATITUDE","SITE_LONGITUDE" )]
 
 
-#4
+##############
 
-#5
+processed_EPA.Air.NC19 <- EPA.Air.NC19[c("Date", "DAILY_AQI_VALUE", "Site.Name",
+          "AQS_PARAMETER_DESC", "COUNTY","SITE_LATITUDE","SITE_LONGITUDE" )]
 
-#6
+######################### PM 2.5 #################################
+
+processed_EPA.Air.PM25_NC18 <- EPA.Air.PM25_NC18 [c("Date", "DAILY_AQI_VALUE", 
+"Site.Name", "AQS_PARAMETER_DESC", "COUNTY","SITE_LATITUDE","SITE_LONGITUDE" )]
+
+#################
+
+processed_EPA.Air.PM25_NC19 <- EPA.Air.PM25_NC19 [c("Date", "DAILY_AQI_VALUE", 
+          "Site.Name", "AQS_PARAMETER_DESC", "COUNTY","SITE_LATITUDE",
+          "SITE_LONGITUDE" )]
+
+#5. Filling all cells in AQS_PARAMETER_DESC with "PM2.5"
+
+processed_EPA.Air.PM25_NC18$AQS_PARAMETER_DESC <- "PM2.5"
+  
+processed_EPA.Air.PM25_NC19$AQS_PARAMETER_DESC <- "PM2.5"
+
+#6. Save four processed data-sets in the Processed folder
+
+write.csv(processed_EPA.Air.NC18, 
+      file = "C:/Users/sasho/Desktop/Environ Data Analytics/Env872 Workspace/EDA-Fall2022_SM/Data/Processed/processed_EPA.Air.NC18.csv",
+      row.names = FALSE)
+          
+write.csv(processed_EPA.Air.NC18,  
+          file = "C:/Users/sasho/Desktop/Environ Data Analytics/Env872 Workspace/EDA-Fall2022_SM/Data/Processed/processed_EPA.Air.NC19.csv",
+          row.names = FALSE)
+          
+write.csv(processed_EPA.Air.NC18,  
+          file = "C:/Users/sasho/Desktop/Environ Data Analytics/Env872 Workspace/EDA-Fall2022_SM/Data/Processed/processed_EPA.Air.PM25_NC18.csv",
+          row.names = FALSE)
+          
+write.csv(processed_EPA.Air.NC18,
+          file = "C:/Users/sasho/Desktop/Environ Data Analytics/Env872 Workspace/EDA-Fall2022_SM/Data/Processed/processed_EPA.Air.PM25_NC19.csv",
+          row.names = FALSE)
+
 
 ```
 
 
 ## Combine datasets
-7. Combine the four datasets with `rbind`. Make sure your column names are identical prior to running this code. 
-8. Wrangle your new dataset with a pipe function (%>%) so that it fills the following conditions: 
 
-* Include all sites that the four data frames have in common: "Linville Falls", "Durham Armory", "Leggett", "Hattie Avenue", "Clemmons Middle", "Mendenhall School", "Frying Pan Mountain", "West Johnston Co.", "Garinger High School", "Castle Hayne", "Pitt Agri. Center", "Bryson City", "Millbrook School" (the function `intersect` can figure out common factor levels)
-* Some sites have multiple measurements per day. Use the split-apply-combine strategy to generate daily means: group by date, site, aqs parameter, and county. Take the mean of the AQI value, latitude, and longitude.
-* Add columns for "Month" and "Year" by parsing your "Date" column (hint: `lubridate` package)
-* Hint: the dimensions of this dataset should be 14,752 x 9.
+7. Combine the four datasets with `rbind`. Make sure your column names are identical
+prior to running this code.
 
-9. Spread your datasets such that AQI values for ozone and PM2.5 are in separate columns. Each location on a specific date should now occupy only one row.
+8. Wrangle your new dataset with a pipe function (%>%) so that it fills the 
+following conditions: 
+
+- Include all sites that the four data frames have in common: "Linville Falls", 
+"Durham Armory", "Leggett", "Hattie Avenue", "Clemmons Middle", "Mendenhall School",
+"Frying Pan Mountain", "West Johnston Co.", "Garinger High School", "Castle Hayne",
+"Pitt Agri. Center", "Bryson City", "Millbrook School" (the function `intersect` 
+can figure out common factor levels)
+
+- Some sites have multiple measurements per day. Use the split-apply-combine 
+strategy to generate daily means: group by date, site, aqs parameter, and county. 
+Take the mean of the AQI value, latitude, and longitude.
+- Add columns for "Month" and "Year" by parsing your "Date" column 
+(hint: `lubridate` package)
+- Hint: the dimensions of this dataset should be 14,752 x 9.
+
+9. Spread your datasets such that AQI values for ozone and PM2.5 are in separate 
+columns. Each location on a specific date should now occupy only one row.
+
 10. Call up the dimensions of your new tidy dataset.
+
 11. Save your processed dataset with the following file name: "EPAair_O3_PM25_NC1718_Processed.csv"
 
 ```{r}
-#7
+#7. Check that column names are the same
 
-#8
+colnames(processed_EPA.Air.NC18)
+colnames(processed_EPA.Air.NC19)
+colnames(processed_EPA.Air.PM25_NC18)
+colnames(processed_EPA.Air.PM25_NC19)
 
-#9
+#Combine with rbind
 
-#10
+combined_EPA.data <- rbind(processed_EPA.Air.NC18, processed_EPA.Air.NC19,
+processed_EPA.Air.PM25_NC18, processed_EPA.Air.PM25_NC19)
 
-#11
+#8. Using the pipe function
+
+filtered_combined_EPA.data <- combined_EPA.data %>%
+  filter(Site.Name %in% c("Linville Falls", "Durham Armory", "Leggett", 
+ "Hattie Avenue", "Clemmons Middle", "Mendenhall School", "Frying Pan Mountain",
+                   "West Johnston Co.", "Garinger High School", "Castle Hayne", 
+                "Pitt Agri. Center", "Bryson City", "Millbrook School")) %>%
+  group_by(AQS_PARAMETER_DESC,Date,Site.Name,COUNTY) %>%
+  summarise(DAILY_AQI_VALUE = mean(DAILY_AQI_VALUE), 
+            SITE_LATITUDE = mean(SITE_LATITUDE),
+            SITE_LONGITUDE = mean(SITE_LONGITUDE)) %>%  
+             mutate(Month = month(Date),
+              Year = year(Date))
+
+
+#9. Spreading Data sets
+
+filtered_combined_EPA.data2 <- filtered_combined_EPA.data %>%
+  pivot_wider(names_from = AQS_PARAMETER_DESC, values_from = DAILY_AQI_VALUE)
+
+filtered_combined_EPA.data2  #Check spreading
+
+#10. Call up the dimensions of tidy dataset
+
+dim(filtered_combined_EPA.data2)
+
+#11. Save your dataset
+
+write.csv(filtered_combined_EPA.data2,  
+          file = "C:/Users/sasho/Desktop/Environ Data Analytics/Env872 Workspace/EDA-Fall2022_SM/Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv",
+          row.names = FALSE)
 
 ```
 
 
 ## Generate summary tables
-12. Use the split-apply-combine strategy to generate a summary data frame. Data should be grouped by site, month, and year. Generate the mean AQI values for ozone and PM2.5 for each group. Then, add a pipe to remove instances where a month and year are not available (use the function `drop_na` in your pipe). 
+
+12. Use the split-apply-combine strategy to generate a summary data frame. 
+Data should be grouped by site, month, and year. Generate the mean AQI values 
+for ozone and PM2.5 for each group. Then, add a pipe to remove instances where 
+a month and year are not available (use the function `drop_na` in your pipe). 
 
 13. Call up the dimensions of the summary dataset.
 
 ```{r}
-#12a
+#12a + b
 
-#12b
+filtered_combined_EPA.data3 <- filtered_combined_EPA.data2 %>%
+  group_by(Site.Name, Month, Year) %>%
+  summarize (Ozone = mean(Ozone),
+             PM2.5 = mean (PM2.5)) %>%
+  drop_na(Ozone) %>%
+  drop_na(PM2.5)
 
-#13
+filtered_combined_EPA.data3 # View data
+  
+
+#13.
+
+dim (filtered_combined_EPA.data3)
 
 ```
 
 14. Why did we use the function `drop_na` rather than `na.omit`?
 
-> Answer: 
+> Answer: In this case, we wanted to remove all the NA values from the dataset 
+instead of keeping the NA values but not incorporating them into our calculations.
