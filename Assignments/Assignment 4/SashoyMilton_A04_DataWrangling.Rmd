@@ -299,4 +299,5 @@ dim (filtered_combined_EPA.data3)
 14. Why did we use the function `drop_na` rather than `na.omit`?
 
 > Answer: In this case, we wanted to remove all the NA values from the dataset 
+(which also deletes the record within which the NA was found)
 instead of keeping the NA values but not incorporating them into our calculations.
