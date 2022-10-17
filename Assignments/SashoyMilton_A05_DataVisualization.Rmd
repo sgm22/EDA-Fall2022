@@ -39,7 +39,7 @@ the processed data file for the Niwot Ridge litter dataset (use the
 
 2. Make sure R is reading dates as date format; if not change the format to date.
 
-```{r}
+```{r Load and check data}
 
 #1. Verify working directory
 
@@ -78,18 +78,18 @@ litter_dat
 
 3. Build a theme and set it as your default theme.
 
-```{r}
+```{r Building my theme}
 
 #3. Building a theme
 
-my_theme <- theme_bw(base_size = 14) + theme(axis.text = element_text(color = "black"), legend.position = "top", legend.justification = "center")
+my_theme <- theme_bw(base_size = 12) + theme(axis.text = element_text(color = "black"), legend.position = "top", legend.justification = "center") +
+  theme(plot.title = element_text(hjust = 0.5))
+theme_set(my_theme)
   
-##theme_update(my_theme)
-
-
 ```
 
 ## Create graphs
+
 For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best 
 practices for data visualization. Ensure your theme, color palettes, axes, 
 and additional aesthetics are edited accordingly.
@@ -99,8 +99,19 @@ separate aesthetics for Peter and Paul lakes. Add a line of best fit and
 color it black. Adjust your axes to hide extreme values (hint: change the 
 limits using `xlim()` and/or `ylim()`).
 
-```{r}
-#4
+```{r,warning=FALSE}
+
+#4. Plot of total phosphorus by phosphate
+
+  ggplot(lake_chemistry, aes(x = tp_ug, y = po4, color=factor(lakename))) +
+  geom_point() +
+  geom_smooth (method = lm, color = "black") +
+  xlab("Phosphate") +
+  ylab ("Total phosphorus/ug") +
+  ylim(0,200) + 
+  ggtitle("Total phosphorus by phosphate 
+  for Peter and Paul Lakes") +
+  labs (color = "Lake's Name")
 
 ```
 
@@ -114,7 +125,44 @@ Tip: R has a build in variable called `month.abb` that returns a list of months;
 see <https://r-lang.com/month-abb-in-r-with-example>
 
 ```{r}
-#5
+#5. Boxplots of Temperature, TP, and TN
+
+#### Separate boxplots
+
+
+temp.plot <- ggplot(lake_chemistry, aes(x = month, y= temperature_C)) +
+  geom_boxplot (aes(color = factor(lakename))) +
+  xlab ("Month") +
+  ylab ("Temperature/ degrees in Celsius") +
+  ggtitle(" Boxplot of Temperature of Peter and Paul Lake") +
+  labs (color = "Name of Lake")
+
+temp.plot #View graph
+
+nitrogen.plot <- ggplot(lake_chemistry, aes (x = month, y = tn_ug)) +
+  geom_boxplot (aes(color = factor(lakename))) +
+  xlab ("Month") +
+  ylab ("Total Nitrogen/ug") +
+  ggtitle(" Boxplot of Total Nitrogen of Peter and Paul Lake") +
+  labs (color = "Name of Lake")
+
+nitrogen.plot #View graph
+
+phosphorus.plot <- ggplot(lake_chemistry, aes (x = month, y = tp_ug)) +
+  geom_boxplot (aes(color = factor(lakename))) +
+  xlab ("Month") +
+  ylab ("Total phosphorous/ ug") +
+  ggtitle(" Boxplot of Total Phosphorus of Peter and Paul Lake") +
+  labs (color = "Name of Lake")
+
+phosphorus.plot #View plot
+
+### Joint Plot
+
+aligned_plots <- align_plots(plotlist = temp.plot, nitrogen.plot,phosphorus.plot, align = "vh", axis = "tblr")
+ggdraw(aligned_plots [[1]])
+
+
 
 ```
 
@@ -131,10 +179,32 @@ of each land use)
 7. [Niwot Ridge] Now, plot the same plot but with NLCD classes separated into 
 three facets rather than separated by color. 
 
-```{r}
-#6
+```{r Niwot Ridge}
+
+#6. 
+
+subset_litter_dat <- litter_dat %>%
+  filter(functionalGroup == "Needles") 
+
+subset_litter_dat #View data
+
+ggplot(subset_litter_dat,aes(x = month(collectDate), y = dryMass, color = factor(nlcdClass))) +
+  geom_point() +
+  xlab ("Month of Collection") +
+  ylab ("Dry Mass of Needle Litter") +
+  ggtitle(" Distribution of Dry Mass of Needle Litter Over Time") +
+  labs (color = "NLCD Class")
+
 
 #7
+
+ggplot(subset_litter_dat, aes(x = month(collectDate), y = dryMass)) +
+  geom_point() +
+  facet_wrap(vars(nlcdClass), nrow = 3) +
+  ylab ("Dry Mass of Needle Litter") +
+  xlab ("Month of Collection") +
+  theme(strip.background = element_rect (color = "black", fill = "green")) +
+   ggtitle(" Distribution of Dry Mass of Needle Litter Over Time")
 
 
 ```
