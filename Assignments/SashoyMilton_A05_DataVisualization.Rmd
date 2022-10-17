@@ -53,9 +53,9 @@ library (cowplot)
 
 #c. Load datasets
 
-lake_chemistry <- read.csv("../Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv")
+lake_chemistry <- read.csv("../Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv", stringsAsFactors = TRUE)
 
-litter_dat <- read.csv("../Data/Processed/NEON_NIWO_Litter_mass_trap_Processed.csv")
+litter_dat <- read.csv("../Data/Processed/NEON_NIWO_Litter_mass_trap_Processed.csv", stringsAsFactors = TRUE)
 
 #2. Check that date is in date format
 
@@ -103,7 +103,7 @@ limits using `xlim()` and/or `ylim()`).
 
 #4. Plot of total phosphorus by phosphate
 
-  ggplot(lake_chemistry, aes(x = tp_ug, y = po4, color=factor(lakename))) +
+  ggplot(lake_chemistry, aes(x = tp_ug, y = po4, color=lakename)) +
   geom_point() +
   geom_smooth (method = lm, color = "black") +
   xlab("Phosphate") +
@@ -140,7 +140,7 @@ temp.plot <- ggplot(lake_chemistry, aes(x = month, y= temperature_C)) +
 temp.plot #View graph
 
 nitrogen.plot <- ggplot(lake_chemistry, aes (x = month, y = tn_ug)) +
-  geom_boxplot (aes(color = factor(lakename))) +
+  geom_boxplot (aes(color = lakename)) +
   xlab ("Month") +
   ylab ("Total Nitrogen/ug") +
   ggtitle(" Boxplot of Total Nitrogen of Peter and Paul Lake") +
@@ -149,7 +149,7 @@ nitrogen.plot <- ggplot(lake_chemistry, aes (x = month, y = tn_ug)) +
 nitrogen.plot #View graph
 
 phosphorus.plot <- ggplot(lake_chemistry, aes (x = month, y = tp_ug)) +
-  geom_boxplot (aes(color = factor(lakename))) +
+  geom_boxplot (aes(color = lakename)) +
   xlab ("Month") +
   ylab ("Total phosphorous/ ug") +
   ggtitle(" Boxplot of Total Phosphorus of Peter and Paul Lake") +
@@ -188,7 +188,7 @@ subset_litter_dat <- litter_dat %>%
 
 subset_litter_dat #View data
 
-ggplot(subset_litter_dat,aes(x = month(collectDate), y = dryMass, color = factor(nlcdClass))) +
+ggplot(subset_litter_dat,aes(x = month(collectDate), y = dryMass, color = nlcdClass)) +
   geom_point() +
   xlab ("Month of Collection") +
   ylab ("Dry Mass of Needle Litter") +
@@ -209,5 +209,7 @@ ggplot(subset_litter_dat, aes(x = month(collectDate), y = dryMass)) +
 
 ```
 Question: Which of these plots (6 vs. 7) do you think is more effective, and why? 
+
+The plot with the NLCD classes separated into three facets rather than separated by color is more effective. WHHHYYYY??
 
 > Answer:

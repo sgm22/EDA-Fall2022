@@ -17,13 +17,16 @@ editor_options:
 ## Set up
 ```{r, message = FALSE}
 library(tidyverse)
-library(agricolae)   
+library(agricolae) 
+library(viridis)
 
-EPAair <- read.csv("./Data_2022sp/Processed/EPAair_O3_PM25_NC1819_Processed.csv", stringsAsFactors = TRUE)
+getwd()
+
+EPAair <- read.csv("./Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv", stringsAsFactors = TRUE)
 # Set date to date format
 EPAair$Date <- as.Date(EPAair$Date, format = "%Y-%m-%d")
 
-Litter <- read.csv("./Data_2022sp/Processed/NEON_NIWO_Litter_mass_trap_Processed.csv", stringsAsFactors = TRUE)
+Litter <- read.csv("./Data/Processed/NEON_NIWO_Litter_mass_trap_Processed.csv", stringsAsFactors = TRUE)
 # Set date to date format
 Litter$collectDate <- as.Date(Litter$collectDate , format = "%Y-%m-%d")
 
@@ -45,7 +48,26 @@ Create three plots, each with appropriately formatted axes and legends. Choose a
 3. geom_violin of ozone divided by year, with the 0.5 quantile marked as a horizontal line. Add letters representing a significant difference between 2018 and 2019. 
 
 ```{r}
+
 #Exercise 1:
+
+ggplot(EPAair, aes(x = Ozone, fill = as.factor(Year))) +
+  geom_density (alpha = 0.5) +
+  scale_fill_manual (values = c("darkgreen", "darkblue")) +
+  labs (x = "Ozone AQI Value", y ="Density", fill = "")
+
+ggplot(EPAair, aes (x = as.factor (Year), y = Ozone)) +
+  geom_boxplot ()+
+  stat_summary (geom = "text", fun = max, vjust = -1, size = 4, label = c ("b", "a"))+
+  labs (x = "", y = "Ozone AQU Value") +
+  ylim (0, 150)
+
+
+ggplot(EPAair, aes (x = as.factor (Year), y = Ozone)) +
+  geom_violin(draw_quantiles = "0.5")+
+  stat_summary (geom = "text", fun = max, vjust = -1, size = 4, label = c ("b", "a"))+
+  labs (x = "", y = "Ozone AQU Value") +
+  ylim (0, 150)
 
 
 ```
@@ -60,9 +82,24 @@ For the NTL-LTER dataset, can we predict PM2.5 from Ozone?
 
 #Exercise 2: Run a linear regression PM2.5 by Ozone. Find the p-value and R-squared value. 
 
+predict_PM2.5 <- lm(data = EPAair, PM2.5 ~ Ozone)
+summary(predict_PM2.5)
+
+## There is a relationship between Ozone and Pm2.5 so we can use Ozone to predict P.M2.5
+
+
 
 
 #Exercise 3: Build a scatterplot. Add a line and standard error for the linear regression. Add the regression equation to the plot
+
+plot (predict_PM2.5)
+
+######scatterplot#####
+
+ggplot(EPAair, aes(x = Ozone, y= PM2.5)) +
+  geom_point() +
+  geom_smooth (method = "lm", col ="blue")
+
 
 
 
