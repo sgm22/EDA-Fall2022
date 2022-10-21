@@ -1,10 +1,13 @@
 ---
 title: "5: Part 2 - Data Visualization Advanced"
-author: "Environmental Data Analytics | John Fay and Luana Lima | Developed by Kateri Salk"
+author: Environmental Data Analytics | John Fay and Luana Lima | Developed by Kateri
+  Salk
 date: "Fall 2022"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 geometry: margin=2.54cm
-editor_options: 
+editor_options:
   chunk_output_type: console
 ---
 
@@ -175,7 +178,7 @@ NvsP <-
 print(NvsP)
 
 # let's first make the plot look better.
-# change your axis labels to reflect TN and TP in micrograms per liter.
+# change your axis labels to reflect TN and TP in micro-grams per liter.
 # change your legend labels
 NvsP2 <-
   ggplot(PeterPaul.chem.nutrients, aes(x = tp_ug, y = tn_ug, color = depth, shape = lakename)) +
@@ -188,7 +191,7 @@ NvsP2 <-
         legend.text = element_text(size = 12), legend.title = element_text(size = 12))
 print(NvsP2)
 
-# change your y axis label to list concentration in micrograms per liter
+# change your y axis label to list concentration in micro-grams per liter
 # remove your x axis label
 # change labels for nutrients in the legend
 # try out the different color palette options and choose one (or edit)
@@ -236,6 +239,7 @@ The following graph displays the counts of specific endpoints measured in neonic
 2. Plot the barplot with the reordered factor levels. Add this line of code to make the bars show up left to right:   scale_x_discrete(limits = rev(levels(Neonics$Endpoint)))
 3. Adjust the x axis labels so they appear at a 45 degree angle. 
 4. Change the color and/or border on the bars. Should you have a consistent color across all bars, or a different color for each bar?
+
 ```{r}
 Neonics <- read.csv("./Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv")
 ggplot(Neonics) +
