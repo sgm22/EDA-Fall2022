@@ -1,18 +1,23 @@
 ---
-title: "Assignment 5: Data Visualization"
+title: 'Assignment 5: Data Visualization'
 author: "Sashoy Milton"
-output: pdf_document
+output:
+  pdf_document: default
+  word_document: default
 geometry: margin=2.54cm
-editor_options: 
+editor_options:
   chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
+
+
 #This code chunk will tidy your knit PDF files, wrapping long code lines
 #For it to work, the "formatR" package needs to be installed
 
 #install.packages('formatR')
-knitr::opts_chunk$set(tidy.opts=list(width.cutoff=80), tidy=TRUE)
+library(formatR)
+knitr::opts_chunk$set(tidy.opts=list(width.cutoff=40), tidy=TRUE)
 ```
 
 ## OVERVIEW
@@ -20,11 +25,13 @@ knitr::opts_chunk$set(tidy.opts=list(width.cutoff=80), tidy=TRUE)
 This exercise accompanies the lessons in Environmental Data Analytics on Data Visualization 
 
 ## Directions
-1. Rename this file `<FirstLast>_A02_CodingBasics.Rmd` (replacing `<FirstLast>` with your first and last name).
+1. Rename this file `<FirstLast>_A02_CodingBasics.Rmd` (replacing `<FirstLast>` 
+with your first and last name).
 2. Change "Student Name" on line 3 (above) with your name.
 3. Work through the steps, **creating code and output** that fulfill each instruction.
 4. Be sure to **answer the questions** in this assignment document.
-5. When you have completed the assignment, **Knit** the text and code into a single PDF file.
+5. When you have completed the assignment, **Knit** the text and code into a 
+single PDF file.
 
 The completed exercise is due on Friday, Oct 21st @ 5:00pm.
 
@@ -33,20 +40,15 @@ The completed exercise is due on Friday, Oct 21st @ 5:00pm.
 ## Set up your session 
 
 1. Set up your session. Verify your working directory and load the tidyverse, 
-lubridate, & cowplot packages. Upload the NTL-LTER processed data files for  
-nutrients and chemistry/physics for Peter and Paul Lakes (use the tidy 
-[`NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv`] version) and 
-the processed data file for the Niwot Ridge litter dataset (use the
-[`NEON_NIWO_Litter_mass_trap_Processed.csv`] version). 
+lubridate, & cowplot packages.  
 
 2. Make sure R is reading dates as date format; if not change the format to date.
 
-```{r Load and check data}
-
-#1. Verify working directory
+```{r}
+##1. Verify working directory
 
 getwd()
-
+setwd("C:/Users/sasho/Desktop/Environ Data Analytics/Env872 Workspace/EDA-Fall2022_SM")
 #b.Load packages
 
 library(tidyverse)
@@ -55,9 +57,10 @@ library (cowplot)
 
 #c. Load datasets
 
-lake_chemistry <- read.csv("../Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv", stringsAsFactors = TRUE)
+lake_chemistry <- read.csv("./Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv", stringsAsFactors = TRUE)
 
-litter_dat <- read.csv("../Data/Processed/NEON_NIWO_Litter_mass_trap_Processed.csv", stringsAsFactors = TRUE)
+litter_dat <- read.csv("./Data/Processed/NEON_NIWO_Litter_mass_trap_Processed.csv", 
+                       stringsAsFactors = TRUE)
 
 #2. Check that date is in date format
 
@@ -66,25 +69,27 @@ litter_dat <- read.csv("../Data/Processed/NEON_NIWO_Litter_mass_trap_Processed.c
 class(lake_chemistry$sampledate)
 lake_chemistry$sampledate <- ymd(lake_chemistry$sampledate)
 class(lake_chemistry$sampledate) # Recheck class of data
-lake_chemistry  #View data to view variable
+View (lake_chemistry)  #View data to view variable
 
 ### Litter data set
 
 class(litter_dat$collectDate)
 litter_dat$collectDate <- ymd(litter_dat$collectDate)
 class(litter_dat$collectDate) #Recheck class of data
-litter_dat
+View (litter_dat)
 
 ```
 ## Define your theme
 
 3. Build a theme and set it as your default theme.
 
-```{r Building my theme}
+```{r}
 
 #3. Building a theme
 
-my_theme <- theme_bw(base_size = 12) + theme(axis.text = element_text(color = "black"), legend.position = "top", legend.justification = "center") +
+my_theme <- theme_bw(base_size = 12) + 
+  theme(axis.text = element_text(color = "black"), 
+      legend.position = "top", legend.justification = "center") +
   theme(plot.title = element_text(hjust = 0.5))
 theme_set(my_theme)
   
@@ -111,8 +116,7 @@ limits using `xlim()` and/or `ylim()`).
   xlab("Phosphate") +
   ylab ("Total phosphorus/ug") +
   ylim(0,200) + 
-  ggtitle("Total phosphorus by phosphate 
-  for Peter and Paul Lakes") +
+  ggtitle("Total phosphorus by phosphate for Peter and Paul Lakes") +
   labs (color = "Lake's Name")
 
 ```
@@ -133,80 +137,83 @@ see <https://r-lang.com/month-abb-in-r-with-example>
 
 
 
-temp.plot <- ggplot(lake_chemistry, aes(x = month.abb[month], y= temperature_C)) +
+temp.plot <- ggplot(lake_chemistry,
+                    aes(x = factor(month,levels = c(1:12), labels = month.abb),
+                        y= temperature_C)) +
   geom_boxplot (aes(color = lakename)) +
   xlab ("Month") +
   ylab ("Temperature/ degrees in Celsius") +
   ggtitle(" Boxplot of Temperature of Peter and Paul Lake") +
-  labs (color = "Name of Lake")
+  labs (color = "Name of Lake") +
+  scale_x_discrete(drop = FALSE) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
 
 temp.plot #View graph
 
-nitrogen.plot <- ggplot(lake_chemistry, aes (x = month.abb[month], y = tn_ug)) +
+nitrogen.plot <- ggplot(lake_chemistry,
+                        aes (x = factor(month,levels = c(1:12), labels = month.abb),
+                             y = tn_ug)) +
   geom_boxplot (aes(color = lakename)) +
   xlab ("Month") +
   ylab ("Total Nitrogen/ug") +
   ggtitle(" Boxplot of Total Nitrogen of Peter and Paul Lake") +
-  labs (color = "Name of Lake")
+  labs (color = "Name of Lake") +
+  scale_x_discrete(drop = FALSE) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
 
 nitrogen.plot #View graph
 
-phosphorus.plot <- ggplot(lake_chemistry, aes (x = month.abb[month], y = tp_ug)) +
+phosphorus.plot <- ggplot(lake_chemistry,
+                          aes (x = factor(month,levels = c(1:12), labels = month.abb),
+                               y = tp_ug)) +
   geom_boxplot (aes(color = lakename)) +
   xlab ("Month") +
   ylab ("Total phosphorous/ ug") +
   ggtitle(" Boxplot of Total Phosphorus of Peter and Paul Lake") +
-  labs (color = "Name of Lake")
+  labs (color = "Name of Lake") +
+  scale_x_discrete(drop = FALSE) +
+   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
 
 phosphorus.plot #View plot
 
+
+```
+
+```{r}
+
 ### Joint Plot
 
-#Creating plots and store in variable without legend
+c.legend <- get_legend(temp.plot)
 
-t.plot <- ggplot(lake_chemistry, aes (x = month.abb[month], y= temperature_C)) +
-  geom_boxplot (aes(color = lakename))+
-   ylab ("Temperature/ degrees in Celsius") +
-  xlab ("") +
-  theme (legend.position = "none")
+title <- ggdraw() + 
+draw_figure_label("Boxplots of Temperature,Total Phosphorus 
+                  and Nitrogen of Peter and Paul Lake",
+                    position = "top.left")
 
-n.plot <- ggplot(lake_chemistry, aes (x = month.abb[month], y = tn_ug)) +
-  geom_boxplot (aes(color = lakename)) +  
-  ylab ("Total Nitrogen/ug") +
-  xlab ("") +
-  theme (legend.position = "none") 
 
-p.plot <- ggplot(lake_chemistry, aes (x = month.abb[month], y = tp_ug)) +
-  geom_boxplot (aes(color = lakename)) + 
-  ylab ("Total phosphorous/ ug") +
-  theme (legend.position = "none") +
-  xlab ("")
+combined_plot <- plot_grid(temp.plot + theme(legend.position = "none") + ggtitle(""), 
+  nitrogen.plot + theme(legend.position = "none") + ggtitle(""), 
+  phosphorus.plot + theme(legend.position = "none") + ggtitle(""), nrow = 1, align = "h")
+
+
+plot_grid(combined_plot,c.legend, title, nrow = 3 , rel_heights = c(5, 1))
+
   
-
-
-#Combine plot
-
-legend <- get_legend(t.plot + 
-                       theme(legend.position = "bottom"))
-
-unified_plot <- plot_grid(t.plot, n.plot,p.plot, labels = c ("Months"), label_y = 2, align = "v", rel_widths = c(5, 5), ncol = 3) 
-   
- 
-
-plot_grid(unified_plot)
-  
-
-
-
-
 ```
 
 Question: What do you observe about the variables of interest over seasons 
 and between lakes? 
 
-> Answer: 
+> Answer:
+    I observe that as we move from spring to summer (August), there is a general increase in median temperature levels for both Peter and Paul Lake, with Paul Lake experiencing higher overall temperatures. Beginning in fall (September), there is an overall decrease in median temperatures across both lakes, with Peter Lake experiencing lower temperatures except in the month of October.
+    Generally, Paul Lake had lower total median nitrogen levels when compared to Peter Lake over all seasons measured (end of spring - early fall). Noticeably, the levels of total nitrogen for most of the data points were fairly consistent for both lakes over the same period.
+    For total phosphorus, the median levels observed at Peter Lake were generally greater than the levels observed at Paul Lake over the observed seasons (late spring to early fall). Further, there was a steady increase in total median phosphorus levels observed at Peter Lake over the same period. Conversely, total median phosphorus levels at Paul Lake from late spring to early fall remained fairly steady.
+    
 
-6. [Niwot Ridge] Plot a subset of the litter dataset by displaying only the 
+6. [Niwot Ridge] Plot a subset of the litter data-set by displaying only the 
 "Needles" functional group. Plot the dry mass of needle litter by date and 
 separate by NLCD class with a color aesthetic. (no need to adjust the name 
 of each land use)
@@ -214,7 +221,7 @@ of each land use)
 7. [Niwot Ridge] Now, plot the same plot but with NLCD classes separated into 
 three facets rather than separated by color. 
 
-```{r Niwot Ridge}
+```{r}
 
 #6. 
 
@@ -223,28 +230,33 @@ subset_litter_dat <- litter_dat %>%
 
 subset_litter_dat #View data
 
-ggplot(subset_litter_dat,aes(x = month(collectDate), y = dryMass, color = nlcdClass)) +
+ggplot(subset_litter_dat,aes(x = collectDate, y = dryMass, color = nlcdClass)) +
   geom_point() +
-  xlab ("Month of Collection") +
+  xlab ("Month and Year of Collection") +
   ylab ("Dry Mass of Needle Litter") +
   ggtitle(" Distribution of Dry Mass of Needle Litter Over Time") +
-  labs (color = "NLCD Class")
-
-
+  labs (color = "NLCD Class") +
+  scale_x_date (limits = as.Date(c("2016-05-16","2019-09-25")), 
+                 date_breaks = "2 months", date_labels = "%b %y") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
+ 
 #7
 
-ggplot(subset_litter_dat, aes(x = month(collectDate), y = dryMass)) +
+ggplot(subset_litter_dat, aes(collectDate, y = dryMass)) +
   geom_point() +
   facet_wrap(vars(nlcdClass), nrow = 3) +
   ylab ("Dry Mass of Needle Litter") +
-  xlab ("Month of Collection") +
+  xlab ("Month and Year of Collection") +
   theme(strip.background = element_rect (color = "black", fill = "green")) +
-   ggtitle(" Distribution of Dry Mass of Needle Litter Over Time")
+   ggtitle(" Distribution of Dry Mass of Needle Litter Over Time") +
+  scale_x_date (limits = as.Date(c("2016-05-16","2019-09-25")), 
+                 date_breaks = "2 months", date_labels = "%b %y") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
 
 
 ```
 Question: Which of these plots (6 vs. 7) do you think is more effective, and why? 
 
-The plot with the NLCD classes separated into three facets rather than separated by color is more effective. WHHHYYYY??
-
-> Answer:
+> Answer: The plot with the NLCD classes separated into three facets rather than separated by color is more effective. This is as it is easier to decipher the differences in dry mass of needle litter for each of the NCLD classes over the observed period when they were separated into their own panel. When separated by color, it was difficult to interpret not only the variation observed at each time point for each NCLD class but to determine the differences in between each class.
