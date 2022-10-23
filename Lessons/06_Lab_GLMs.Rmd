@@ -20,8 +20,11 @@ library(tidyverse)
 library(agricolae) 
 library(viridis)
 
+<<<<<<< HEAD
 getwd()
 
+=======
+>>>>>>> 7c5e444884d2f35eb9cb7eb454f60821a36745ef
 EPAair <- read.csv("./Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv", stringsAsFactors = TRUE)
 # Set date to date format
 EPAair$Date <- as.Date(EPAair$Date, format = "%Y-%m-%d")
