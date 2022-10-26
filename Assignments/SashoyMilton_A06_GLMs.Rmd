@@ -84,7 +84,7 @@ Ha: Mean lake tempearature recorded during July will change with depth across al
 
 5. Visualize the relationship among the two continuous variables with a scatter plot of temperature by depth. Add a smoothed line showing the linear model, and limit temperature values from 0 to 35 °C. Make this plot look pretty and easy to read.
 
-```{r scatterplot}
+```{r scatterplot, warning=FALSE}
 #4
 
 processed.lake.chemistry <- lake.chemistry %>%
@@ -109,7 +109,7 @@ ggplot(processed.lake.chemistry, aes(x= depth, y=temperature_C)) +
 
 6. Interpret the figure. What does it suggest with regards to the response of temperature to depth? Do the distribution of points suggest about anything about the linearity of this trend?
 
-> Answer: 
+> Answer: The graph suggests that temperature is inversely related to depth. As depth increases, temperature decreases. The distribution of points suggest that the relationship is not linear but more closely follows a curve. 
 
 
 7. Perform a linear regression to test the relationship and display the results
@@ -117,14 +117,20 @@ ggplot(processed.lake.chemistry, aes(x= depth, y=temperature_C)) +
 ```{r linear.regression}
 #7
 
+lake.chemistry.mod <- lm(data = processed.lake.chemistry, temperature_C ~ depth)
+
+summary (lake.chemistry.mod) #Display results
+
+plot(lake.chemistry.mod) # Check the fit of the model
 
 ```
 
 
 8. Interpret your model results in words. Include how much of the variability in temperature is explained by changes in depth, the degrees of freedom on which this finding is based, and the statistical significance of the result. Also mention how much temperature is predicted to change for every 1m change in depth. 
 
-> Answer:
+> Answer: Based on the results on the model, 73.87% of the variability in temperature is explained by changes in depth. The degrees of freedom on which this finding is based is 9726. The p-value for this model is  <0.001.
 
+Interpretation: For every 1m change in depth, there is temperature decreases by -1.94621 Celsius.
 
 ---
 
@@ -137,11 +143,23 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 10. Run a multiple regression on the recommended set of variables. 
 
 ```{r temperature.model}
-#9
+#9.
 
+#Determine the set of explanatory variables best suited to predict temperature
 
+lake.chemistry.mod.all.v <- lm(data = processed.lake.chemistry, 
+                               temperature_C ~ year4 + daynum + depth)
 
-#10
+step(lake.chemistry.mod.all.v)  ##Step Model
+summary(lake.chemistry.mod.all.v)
+
+#10.
+
+lake.chemistry.mod.all.2 <- lm(data = processed.lake.chemistry, 
+                               temperature_C ~ daynum + depth)
+
+step(lake.chemistry.mod.all.2)
+summary (lake.chemistry.mod.all.2)
 
 
 ```
