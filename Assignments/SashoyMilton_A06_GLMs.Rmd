@@ -8,11 +8,13 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
+
 #This code chunk will tidy your knit PDF files, wrapping long code lines
 #For it to work, the "formatR" package needs to be installed
 
 #install.packages('formatR')
-knitr::opts_chunk$set(tidy.opts=list(width.cutoff=80), tidy=TRUE)
+knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
+
 ```
 
 ## OVERVIEW
@@ -32,7 +34,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 
 2. Build a ggplot theme and set it as your default theme.
 
-```{r setup}
+```{r}
 #1.
 
 ##Load packages
@@ -40,14 +42,17 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 library(tidyverse)
 library (agricolae)
 library(lubridate)
+library(corrplot)
 
 ## Check my working directory
 
 getwd()
+setwd("C:/Users/sasho/Desktop/Environ Data Analytics/Env872 Workspace/EDA-Fall2022_SM")
 
 ## Load data
 
-lake.chemistry <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv", stringsAsFactors = TRUE)
+lake.chemistry <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv", 
+                           stringsAsFactors = TRUE)
 
 ##Set date variable
 
@@ -91,7 +96,7 @@ processed.lake.chemistry <- lake.chemistry %>%
   mutate(Month = month(sampledate)) %>%
   filter (Month == 7) %>%
   select(c(lakename,year4,daynum,depth, temperature_C)) %>%
-  drop_na()
+  drop_na()      ## Subset for the month of July
 
 #5.
 
@@ -121,6 +126,7 @@ lake.chemistry.mod <- lm(data = processed.lake.chemistry, temperature_C ~ depth)
 
 summary (lake.chemistry.mod) #Display results
 
+par(mfrow = c(2, 2), mar = c(4, 4, 4, 4))
 plot(lake.chemistry.mod) # Check the fit of the model
 
 ```
@@ -128,7 +134,7 @@ plot(lake.chemistry.mod) # Check the fit of the model
 
 8. Interpret your model results in words. Include how much of the variability in temperature is explained by changes in depth, the degrees of freedom on which this finding is based, and the statistical significance of the result. Also mention how much temperature is predicted to change for every 1m change in depth. 
 
-> Answer: Based on the results on the model, 73.87% of the variability in temperature is explained by changes in depth. The degrees of freedom on which this finding is based is 9726. The p-value for this model is  <0.001.
+> Answer: Based on the results on the model, 73.87% of the variability in temperature is explained by changes in depth. The degrees of freedom on which this finding is based is 9726. The p-value for this model is  less than 0.001.
 
 Interpretation: For every 1m change in depth, there is temperature decreases by -1.94621 Celsius.
 
@@ -147,50 +153,74 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 #Determine the set of explanatory variables best suited to predict temperature
 
+
 lake.chemistry.mod.all.v <- lm(data = processed.lake.chemistry, 
-                               temperature_C ~ year4 + daynum + depth)
+                               temperature_C ~ year4 + daynum + depth) 
+# Model which includes all variables
+
+par(mfrow = c(2,2), mar=c(4,4,4,4))
+plot(lake.chemistry.mod.all.v)
+
+
+summary(lake.chemistry.mod.all.v)
+
 
 step(lake.chemistry.mod.all.v)  ##Step Model
-summary(lake.chemistry.mod.all.v)
+
+##AIC is the best when you remove none.
 
 #10.
 
-lake.chemistry.mod.all.2 <- lm(data = processed.lake.chemistry, 
-                               temperature_C ~ daynum + depth)
+lm(data = processed.lake.chemistry, 
+                               temperature_C ~ year4 + daynum + depth)
 
-step(lake.chemistry.mod.all.2)
-summary (lake.chemistry.mod.all.2)
-
+summary(lake.chemistry.mod.all.v)
 
 ```
 
 11. What is the final set of explanatory variables that the AIC method suggests we use to predict temperature in our multiple regression? How much of the observed variance does this model explain? Is this an improvement over the model using only depth as the explanatory variable?
 
-> Answer: 
+> Answer: The final set of explanatory variables that the AIC method suggests to predict temperature is year4, dayum and depth. This model explains 74.11% of the observed variance. This model is a slight improvemnet over the model using only depth as an explanatory variable.
 
-
-
----
 ## Analysis of Variance
 
 12. Now we want to see whether the different lakes have, on average, different temperatures in the month of July. Run an ANOVA test to complete this analysis. (No need to test assumptions of normality or similar variances.) Create two sets of models: one expressed as an ANOVA models and another expressed as a linear model (as done in our lessons).
 
 ```{r anova.model}
-#12
+#12. 
 
+## Formatted as ANOVA
+
+lake.chemistry.anova <- aov( data = processed.lake.chemistry, temperature_C ~ lakename)
+summary(lake.chemistry.anova)  ## ANOVA Model
+
+## Formatted as Linear Model
+
+lake.chemistry.anova2 <- lm(data = processed.lake.chemistry, temperature_C ~ lakename)
+summary(lake.chemistry.anova2) ## Linear Model
 
 ```
 
 13. Is there a significant difference in mean temperature among the lakes? Report your findings. 
 
-> Answer: 
-
+> Answer: Given the null hypothesis is true, there is a significant difference in mean temperature among the lakes where the p-value is less than 0.001. Therefore, we can reject the null hypothesis in favor of the alternative that is a difference in mean lake temperatures.
 
 
 14. Create a graph that depicts temperature by depth, with a separate color for each lake. Add a geom_smooth (method = "lm", se = FALSE) for each lake. Make your points 50 % transparent. Adjust your y axis limits to go from 0 to 35 degrees. Clean up your graph to make it pretty. 
 
 ```{r scatterplot.2}
-#14.
+
+#14. 
+
+ggplot (processed.lake.chemistry, aes(x = depth, y = temperature_C , color = lakename)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "black", se = FALSE) +
+  ylab("Temperature in degrees in Celsius") +
+  xlab (" Depth/m") +
+  ggtitle(" The Relationship Between Temperature And Depth Per Lake") +
+  ylim (0,35) +
+  facet_wrap(vars(lakename), nrow = 3) +
+  labs ( color = "Lake Name")
 
 
 ```
@@ -198,27 +228,42 @@ summary (lake.chemistry.mod.all.2)
 15. Use the Tukey's HSD test to determine which lakes have different means.
 
 ```{r tukey.test}
-#15
 
+#15.
+
+TukeyHSD(lake.chemistry.anova)
 
 ```
 
 16.From the findings above, which lakes have the same mean temperature, statistically speaking, as Peter Lake? Does any lake have a mean temperature that is statistically distinct from all the other lakes?
 
->Answer:
+>Answer: Based on the findings, the following lakes have the same mean temperature as Peter Lake, statisttically speaking: Ward Lake and Paul Lake.
+Based on these results, no lake has a mean temperature that is different from ALL other lakes another based on the adjusted p-values.
 
- 
 
 17. If we were just looking at Peter Lake and Paul Lake. What's another test we might explore to see whether they have distinct mean temperatures? 
 
->Answer: 
-
+>Answer: If we just looking at Peter and Paul Lake, we could use a two-sampled t-test.
 
 
 18. Wrangle the July data to include only records for Crampton Lake and Ward Lake. Run the two-sample T-test on these data to determine whether their July temperature are same or different. What does the test say? Are the mean temperatures for the lakes equal? Does that match you answer for part 16?
 
 ```{r t.test}
 
+Crampton.Ward.lake.chemistry.July <- subset(processed.lake.chemistry, 
+                                  lakename %in% c("Crampton Lake","Ward Lake"))
+
+summary(Crampton.Ward.lake.chemistry.July) 
+##Check that data was subsetted correctly
+
+
+#############################################
+
+#Testing the mean difference in temperature
+
+t.test(data = Crampton.Ward.lake.chemistry.July, temperature_C ~ lakename)
+
 ```
 
->Answer: 
+>Answer: Based on the results of the t-test, there is no significant difference between the mean 
+temperature for Crampton Lake and Ward Lake, p- value is greater than 0.05. The means are the same statistically. We do not have sufficient evidence to reject the null hypothesis. This is synonymous with my response to question 16. 
