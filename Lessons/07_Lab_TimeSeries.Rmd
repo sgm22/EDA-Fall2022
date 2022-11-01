@@ -232,7 +232,8 @@ deseason_rainfall <- seasadj(BRA_rainfall_decomposed)
 plot(deseason_rainfall)
 
 
-
+deseason_temp <- seasadj(BRA_temp_decomposed)
+plot(deseason_temp)
 
 
 
