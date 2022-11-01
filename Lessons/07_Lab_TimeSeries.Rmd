@@ -28,6 +28,7 @@ library(Kendall)
 #install.packages("tseries")
 library(tseries)
 library(skimr)
+library(forecast)
 
 # Set theme
 mytheme <- theme_classic(base_size = 14) +
@@ -83,7 +84,7 @@ BRA_complete <- inner_join(Rainfall_BR_processed,Temp_BR_processed)
 
 #Exercise 5: Check if there is any missing data for both temperature and rainfall series.
 
-summary(BRA_complete)
+summary(BRA_complete) #or
 skim(BRA_complete)
 
 ### Look at data 
@@ -118,7 +119,7 @@ ggplot(BRA_complete, aes(x = Date, y = Temperature_C)) +
 #Frequency: how often we are repeating for the season (e.g. year - 12 and day - 365)
 
 f_month <- month(first(BRA_complete$Date))
-f_month <-
+f_month 
 
 
 BRA_rainfall.ts <- ts(BRA_complete$Rainfall, start = c(1901,1), frequency = 12)
@@ -162,17 +163,41 @@ plot(BRA_temp_decomposed)
 BRA_Rainfall_Components <- as.data.frame(BRA_rainfall_decomposed$time.series [,1:3])
 BRA_Temp_Components <- as.data.frame(BRA_rainfall_decomposed$time.series[,1:3])
 
+
+# Exercise 10: Visualize how the trend maps onto the data for both series
+
+# Format first
+
 BRA_Rainfall_Components <- mutate (BRA_Rainfall_Components,
                  Observed = BRA_complete$Rainfall,
                 Date = BRA_complete$Date)
 
-
-# Exercise 10: Visualize how the trend maps onto the data for both series
-
-
-
+BRA_Temp_Components <- mutate(BRA_Temp_Components,
+                              Observed = BRA_complete$Temp,
+                              Date = BRA_complete$Date)
 
 
+
+#Visualize
+
+ggplot(BRA_Rainfall_Components) + 
+  geom_line(aes(y = Observed, x = Date), size = 0.25) +
+  geom_line (aes(y=trend, x = Date), color = "#c13d75ff") +
+  #"geom_line(aes(y=seasonal, x = Date), color = "blue) +
+  #geom_hline(yintercept = 0, lty =2) +
+  ylab ("Rainfall")
+
+
+ggplot(BRA_Temp_Components) + geom_line(aes(y= Observed, x = Date), size = 0.25) +
+  geom_line(aes(y= trend, x = Date),
+            color = "#c13d75ff") +
+  #"geom_line(aes(y=seasonal, x = Date), color = "blue) +
+  #geom_hline(yintercept = 0, lty =2) +
+  ylab ("Temperature")
+
+
+## To overlay the trend on top of graph, you would need to subtract the mean.
+  
 
 ```
 
@@ -192,16 +217,19 @@ Monotonic trends are a gradual shift over time that is consistent in direction. 
 # Exercise 11: Apply one of the trend detection test to the original data set. Remember that the data has seasonal component, which test can be applied in this case?
 
 
+trend_rainfall <- Kendall::SeasonalMannKendall (BRA_rainfall.ts)
+trend_rainfall
+summary(trend_rainfall)
 
-
-
-
-
+trend_temperature <- Kendall::SeasonalMannKendall(BRA_Temp.ts)
+trend_rainfall
+summary(trend_temperature)
 
 
 # Exercise 12: Now remove the seasonality and apply another test. Compare the results with what you obtained on Exercise 9.
 
-
+deseason_rainfall <- seasadj(BRA_rainfall_decomposed)
+plot(deseason_rainfall)
 
 
 
