@@ -73,9 +73,11 @@ EPAair_O3_GaringerNC2019_raw <- read_csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_Ga
 
 # Combine data into one dataset
 
-GaringerOzone <- merge(EPAair_O3_GaringerNC2010_raw,EPAair_O3_GaringerNC2011_raw,EPAair_O3_GaringerNC2012_raw,EPAair_O3_GaringerNC2013_raw,EPAair_O3_GaringerNC2014_raw,EPAair_O3_GaringerNC2015_raw,EPAair_O3_GaringerNC2016_raw,EPAair_O3_GaringerNC2017_raw, EPAair_O3_GaringerNC2018_raw, EPAair_O3_GaringerNC2019_raw)
+GaringerOzone_list <- list(EPAair_O3_GaringerNC2010_raw,EPAair_O3_GaringerNC2011_raw,EPAair_O3_GaringerNC2012_raw,EPAair_O3_GaringerNC2013_raw,EPAair_O3_GaringerNC2014_raw,EPAair_O3_GaringerNC2015_raw,EPAair_O3_GaringerNC2016_raw,EPAair_O3_GaringerNC2017_raw, EPAair_O3_GaringerNC2018_raw, EPAair_O3_GaringerNC2019_raw)
 
 
+GaringerOzone <- Reduce(function(x,y) merge (x, y, all = TRUE), GaringerOzone_list)
+dim(GaringerOzone) # Check dimensions
 
 
 ```
@@ -91,11 +93,22 @@ GaringerOzone <- merge(EPAair_O3_GaringerNC2010_raw,EPAair_O3_GaringerNC2011_raw
 6. Use a `left_join` to combine the data frames. Specify the correct order of data frames within this function so that the final dimensions are 3652 rows and 3 columns. Call your combined data frame GaringerOzone. 
 
 ```{r}
-# 3
+# 3. Set date column as date class
 
-# 4
+GaringerOzone$Date <- mdy(GaringerOzone$Date)
+class(GaringerOzone$Date)  #Check class
 
-# 5
+
+# 4. Subset data
+
+GaringerOzone_processed <- GaringerOzone %>%
+  select(Date, `Daily Max 8-hour Ozone Concentration`, DAILY_AQI_VALUE)
+
+# 5. Explore data
+
+View(GaringerOzone)
+
+#Fill and rename dataset
 
 # 6
 
