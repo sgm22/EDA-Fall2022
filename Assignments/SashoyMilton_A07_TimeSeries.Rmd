@@ -45,6 +45,13 @@ library (trend)
 getwd()
 setwd("C:/Users/sasho/Desktop/Environ Data Analytics/Env872 Workspace/EDA-Fall2022_SM")
 
+##Set theme
+# Set theme
+mytheme <- theme_classic(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top")
+theme_set(mytheme)
+
 
 ## Load datasets
 
@@ -96,7 +103,8 @@ dim(GaringerOzone) # Check dimensions
 # 3. Set date column as date class
 
 GaringerOzone$Date <- mdy(GaringerOzone$Date)
-class(GaringerOzone$Date)  #Check class
+class(GaringerOzone$Date) #Check class
+summary(GaringerOzone)
 
 
 # 4. Subset data
@@ -104,14 +112,31 @@ class(GaringerOzone$Date)  #Check class
 GaringerOzone_processed <- GaringerOzone %>%
   select(Date, `Daily Max 8-hour Ozone Concentration`, DAILY_AQI_VALUE)
 
-# 5. Explore data
-
 View(GaringerOzone)
 
-#Fill and rename dataset
+# 5. Explore data
+Days <- as.data.frame(seq(ymd('2010-01-01'), ymd('2019-12-31'), by = 'days')) #Daily Dataset
+head(Days) # Check data
 
-# 6
 
+## Get column name
+
+colnames(Days)
+
+## Rename column days to date
+
+Days <- Days %>% 
+  rename(Date = "seq(ymd(\"2010-01-01\"), ymd(\"2019-12-31\"), by = \"days\")")
+
+head(Days) #Check column name change
+
+
+# 6.Join days and GaringerOzone
+
+GaringerOzone <- left_join(Days, GaringerOzone_processed) #Rewrite GaringerOzone
+dim(GaringerOzone) # Check dimensions
+head(GaringerOzone) #Check data
+summary(GaringerOzone)
 
 ```
 
@@ -120,11 +145,19 @@ View(GaringerOzone)
 7. Create a line plot depicting ozone concentrations over time. In this case, we will plot actual concentrations in ppm, not AQI values. Format your axes accordingly. Add a smoothed line showing any linear trend of your data. Does your plot suggest a trend in ozone concentration over time?
 
 ```{r}
-#7
+#7. Plot line graph
 
+class(GaringerOzone$`Daily Max 8-hour Ozone Concentration`)
+
+ggplot(GaringerOzone, aes(x = Date, y = `Daily Max 8-hour Ozone Concentration`))+
+  geom_line() +
+  ylab("Daily Max 8-hour Ozone Concentration (ppm)")+
+   geom_smooth (method = "lm") +
+  ggtitle ("Ozone Concentrations (ppm) Over A Period From 2010 to 2019")
+  
 ```
 
->Answer:
+>Answer: There is a slight decline in ozone concentration (ppm) seen over the period. 
 
 ## Time Series Analysis
 
@@ -133,7 +166,28 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 8. Use a linear interpolation to fill in missing daily data for ozone concentration. Why didn't we use a piecewise constant or spline interpolation?
 
 ```{r}
-#8
+#8. Linear interpolation
+
+na.interp(
+  x,
+  lambda = NULL,
+  linear = (frequency(x) <= 1 | sum(!is.na(x)) <= 2 * frequency(x))
+)
+
+## As Time Series has a seasonal component, we need to first remove the seasonality then interpolate and readd the time series
+
+Ozone_Concentartion_ts <- ts(GaringerOzone$`Daily Max 8-hour Ozone Concentration`, start = c(2010,1), frequency = 365)
+Ozone_Concentartion_ts
+
+##Decompse time series
+
+Ozone_Concentration_decomposed <- stl(Ozone_Concentartion_ts, s.window = "periodic", na.action = na.approx)
+plot(Ozone_Concentration_decomposed)
+
+#Remove seasonality
+
+
+
 
 ```
 
