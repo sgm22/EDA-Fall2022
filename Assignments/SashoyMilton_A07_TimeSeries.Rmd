@@ -29,7 +29,7 @@ The completed exercise is due on Tuesday, March 16 at 11:59 pm.
 
 2. Import the ten datasets from the Ozone_TimeSeries folder in the Raw data folder. These contain ozone concentrations at Garinger High School in North Carolina from 2010-2019 (the EPA air database only allows downloads for one year at a time). Import these either individually or in bulk and then combine them into a single dataframe named `GaringerOzone` of 3589 observation and 20 variables. 
 
-```{r, message = FALSE}
+```{r, message = FALSE, warning = FALSE}
 #1.
 
 ## Load library
@@ -38,6 +38,7 @@ library(tidyverse)
 library(lubridate)
 library (zoo)
 library (trend)
+library(Kendall)
 
 
 ## Check working directory
@@ -46,7 +47,6 @@ getwd()
 setwd("C:/Users/sasho/Desktop/Environ Data Analytics/Env872 Workspace/EDA-Fall2022_SM")
 
 ##Set theme
-# Set theme
 mytheme <- theme_classic(base_size = 14) +
   theme(axis.text = element_text(color = "black"), 
         legend.position = "top")
@@ -187,34 +187,12 @@ summary(GaringerOzone_interpolate) # View data
 GaringerOzone.monthly <- GaringerOzone_interpolate %>%
   mutate(Year = year(Date)) %>%
   mutate(Month = month(Date)) %>%
-  group_by(Month) %>%
-  summarise(Mean.Ozoneconcentration = mean(Ozone_Concentration_cont)) 
+  mutate (Month_Year = my(paste0(Month,"-", Year))) %>%
+  group_by(Month,Year, Month_Year) %>%
+  summarise(MeanOzone = mean(Ozone_Concentration_cont))
 
 
-GaringerOzone.Date  = floor_date(GaringerOzone_interpolate$Date, "month")
-
-Temp_BR_processed <-
-  Temp_BR %>% 
-  rename( Temperature_C = Temperature....Celsius.) %>% 
-  separate(Statistics,c("Null","Month","Null2")," ") %>% 
-  mutate( Date = my(paste0(Month,"-",Year))) %>% 
-  select(Date,Temperature_C) 
-
-
-GaringerOzone.monthly %>%
-  mutate()
-
-
-
-head(GaringerOzone.monthly)
-
-
-Temp_BR_processed <-
-  Temp_BR %>% 
-  rename( Temperature_C = Temperature....Celsius.) %>% 
-  separate(Statistics,c("Null","Month","Null2")," ") %>% 
-  mutate( Date = my(paste0(Month,"-",Year))) %>% 
-  select(Date,Temperature_C) 
+head(GaringerOzone.monthly) # View data
 
 ```
 
@@ -231,6 +209,8 @@ GaringerOzone.daily.ts
 
 #Monthly time series
 
+Garinger.monthly.ts <- ts(GaringerOzone.monthly$MeanOzone, start = c(2010,1), frequency = 12)
+Garinger.monthly.ts
 
 ```
 
@@ -242,10 +222,13 @@ GaringerOzone.daily.ts
 
 #Decompose the daily time series
 
-GaringerOzone.daily_decomposed <- stl(GaringerOzone.daily.ts, s.window = "periodic", na.action = na.approx)
+GaringerOzone.daily_decomposed <- stl(GaringerOzone.daily.ts, s.window = "periodic")
 plot(GaringerOzone.daily_decomposed)
 
 #Decompose the monthly time series
+
+Garinger.monthly.decomposed <- stl(Garinger.monthly.ts, s.window = "periodic")
+plot(Garinger.monthly.decomposed)
 
 ```
 
@@ -256,30 +239,34 @@ plot(GaringerOzone.daily_decomposed)
 #12. Run the seasonal Mann-Kendall
 
 
-GaringerOzone.monthly_trend <- Kendall::SeasonalMannKendall(GaringerOzone.monthly.ts)
+GaringerOzone.monthly_trend <- Kendall::SeasonalMannKendall(Garinger.monthly.ts)
 GaringerOzone.monthly_trend
 summary(GaringerOzone.monthly_trend)
 
-
-
 ```
 
-> Answer: 
+> Answer: In this case, the seasonal Mann-Kendall is the most appropriate as there is a seasonal component to the time series.
 
 13. Create a plot depicting mean monthly ozone concentrations over time, with both a geom_point and a geom_line layer. Edit your axis labels accordingly.
 
 ```{r}
 
-# 13
+# 13. Plot 
 
-
-
-
+ggplot(GaringerOzone.monthly, aes(x = Month_Year, y = MeanOzone)) +
+  geom_line() +
+  geom_point() +
+  xlab("Time") +
+  ylab ("Mean Monthly Ozone Concentrations (ppm)") +
+  ggtitle (" Mean Monthly Ozone Concentrations Over Time") +
+  geom_smooth(method = lm)
+  
 ```
 
 14. To accompany your graph, summarize your results in context of the research question. Include output from the statistical test in parentheses at the end of your sentence. Feel free to use multiple sentences in your interpretation.
 
-> Answer: 
+> Answer: In the original plot, there was a slight decline seen in ozone concentrations over time. The results of the Mann-Kendall
+test indicates that the decline seen is insignificant, p =0.16323 and tau = -0.1, for the monthly trend.
 
 15. Subtract the seasonal component from the `GaringerOzone.monthly.ts`. Hint: Look at how we extracted the series components for the EnoDischarge on the lesson Rmd file.
 
@@ -288,13 +275,18 @@ summary(GaringerOzone.monthly_trend)
 ```{r}
 #15
 
+Garinger.monthly.decomposed$time.series
 
+
+deseason_Garinger <- Garinger.monthly.ts - Garinger.monthly.decomposed$time.series[,1]
+plot(deseason_Garinger) # Check Seasonality
 
 #16
 
-
+GaringerOzone.monthly_trend.deseason <- MannKendall(deseason_Garinger)
+summary(GaringerOzone.monthly_trend.deseason)
 
 
 ```
 
-> Answer: 
+> Answer: My results remain synonymous with the output obtained with the seasonal Mann-Kendall. These results also indicate that the slight decline seen in Ozone concentrations over the period of 2010 - 2019 was not significant, p = 0.10388 and tau = 0.1.

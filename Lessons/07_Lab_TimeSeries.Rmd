@@ -222,7 +222,7 @@ trend_rainfall
 summary(trend_rainfall)
 
 trend_temperature <- Kendall::SeasonalMannKendall(BRA_Temp.ts)
-trend_rainfall
+trend_temperature
 summary(trend_temperature)
 
 
