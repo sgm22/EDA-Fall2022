@@ -7,6 +7,10 @@ editor_options:
   chunk_output_type: console
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
 ## OVERVIEW
 
 This exercise accompanies the lessons in Environmental Data Analytics on time series analysis. 
@@ -80,7 +84,10 @@ EPAair_O3_GaringerNC2019_raw <- read_csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_Ga
 
 # Combine data into one dataset
 
-GaringerOzone_list <- list(EPAair_O3_GaringerNC2010_raw,EPAair_O3_GaringerNC2011_raw,EPAair_O3_GaringerNC2012_raw,EPAair_O3_GaringerNC2013_raw,EPAair_O3_GaringerNC2014_raw,EPAair_O3_GaringerNC2015_raw,EPAair_O3_GaringerNC2016_raw,EPAair_O3_GaringerNC2017_raw, EPAair_O3_GaringerNC2018_raw, EPAair_O3_GaringerNC2019_raw)
+GaringerOzone_list <- list(EPAair_O3_GaringerNC2010_raw,EPAair_O3_GaringerNC2011_raw,
+EPAair_O3_GaringerNC2012_raw,EPAair_O3_GaringerNC2013_raw,EPAair_O3_GaringerNC2014_raw,
+EPAair_O3_GaringerNC2015_raw,EPAair_O3_GaringerNC2016_raw,EPAair_O3_GaringerNC2017_raw, 
+EPAair_O3_GaringerNC2018_raw, EPAair_O3_GaringerNC2019_raw)
 
 
 GaringerOzone <- Reduce(function(x,y) merge (x, y, all = TRUE), GaringerOzone_list)
@@ -115,7 +122,8 @@ GaringerOzone_processed <- GaringerOzone %>%
 View(GaringerOzone)
 
 # 5. Explore data
-Days <- as.data.frame(seq(ymd('2010-01-01'), ymd('2019-12-31'), by = 'days')) #Daily Dataset
+Days <- as.data.frame(seq(ymd('2010-01-01'), ymd('2019-12-31'), by = 'days')) 
+#Daily Dataset
 head(Days) # Check data
 
 
@@ -204,13 +212,15 @@ head(GaringerOzone.monthly) # View data
 
 #Daily time series
 
-GaringerOzone.daily.ts <- ts(GaringerOzone_interpolate$Ozone_Concentration_cont, start = c(2010,1), frequency = 365)
-GaringerOzone.daily.ts
+GaringerOzone.daily.ts <- ts(GaringerOzone_interpolate$Ozone_Concentration_cont, 
+                             start = c(2010,1), frequency = 365)
+head (GaringerOzone.daily.ts)
 
 #Monthly time series
 
-Garinger.monthly.ts <- ts(GaringerOzone.monthly$MeanOzone, start = c(2010,1), frequency = 12)
-Garinger.monthly.ts
+Garinger.monthly.ts <- ts(GaringerOzone.monthly$MeanOzone, start = c(2010,1),
+                          frequency = 12)
+head (Garinger.monthly.ts)
 
 ```
 
@@ -222,7 +232,8 @@ Garinger.monthly.ts
 
 #Decompose the daily time series
 
-GaringerOzone.daily_decomposed <- stl(GaringerOzone.daily.ts, s.window = "periodic")
+GaringerOzone.daily_decomposed <- stl(GaringerOzone.daily.ts, 
+                                      s.window = "periodic")
 plot(GaringerOzone.daily_decomposed)
 
 #Decompose the monthly time series
@@ -275,7 +286,7 @@ test indicates that the decline seen is insignificant, p =0.16323 and tau = -0.1
 ```{r}
 #15
 
-Garinger.monthly.decomposed$time.series #View timeseries
+Garinger.monthly.decomposed$time.series #View time series
 
 deseason_Garinger <- Garinger.monthly.ts - Garinger.monthly.decomposed$time.series[,1]
 plot(deseason_Garinger) # Check Seasonality
