@@ -275,8 +275,7 @@ test indicates that the decline seen is insignificant, p =0.16323 and tau = -0.1
 ```{r}
 #15
 
-Garinger.monthly.decomposed$time.series
-
+Garinger.monthly.decomposed$time.series #View timeseries
 
 deseason_Garinger <- Garinger.monthly.ts - Garinger.monthly.decomposed$time.series[,1]
 plot(deseason_Garinger) # Check Seasonality
