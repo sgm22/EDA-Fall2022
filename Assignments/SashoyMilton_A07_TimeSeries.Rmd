@@ -186,12 +186,14 @@ plot(Ozone_Concentration_decomposed)
 
 #Remove seasonality
 
-
+adjust_Ozone <- Ozone_Concentartion_ts - Ozone_Concentration_decomposed$seasonality
 
 
 ```
 
-> Answer: 
+> Answer: * **Piecewise constant**: also known as a "nearest neighbor" approach. Any missing data are assumed to be equal to the measurement made nearest to that date (could be earlier or later).
+* **Linear**: could be thought of as a "connect the dots" approach. Any missing data are assumed to fall between the previous and next measurement, with a straight line drawn between the known points determining the values of the interpolated data on any given date.
+* **Spline**: similar to a linear interpolation except that a quadratic function is used to interpolate rather than drawing a straight line.
 
 
 9. Create a new data frame called `GaringerOzone.monthly` that contains aggregated data: mean ozone concentrations for each month. In your pipe, you will need to first add columns for year and month to form the groupings. In a separate line of code, create a new Date column with each month-year combination being set as the first day of the month (this is for graphing purposes only)
