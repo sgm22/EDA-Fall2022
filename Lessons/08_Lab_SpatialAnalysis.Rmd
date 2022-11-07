@@ -81,11 +81,22 @@ mapView(counties_sf, zcol = "AWATER")
 ```{r read HUCs shapefile}
 #Read the shapefile into an sf dataframe named "huc8_sf"
 
+huc8_sf <- st_read('./Data/Spatial/NCHUC8.shp')
+
+st_crs(huc8_sf) #Check the CRS of the data set
+
+
+#The CRS that this data set uses is WGS 84
 
 
 #View the data as a map, colored by the acreage in each
 
+mapView(huc8_sf, zcol = "ACRES")
 
+#Check column names
+colnames(huc8_sf)
+
+mapView(huc8_sf)
 ```
 
 ### EXERCISE 2.2.2: Read a subset of data into a spatial dataframe and map it
@@ -95,9 +106,13 @@ mapView(counties_sf, zcol = "AWATER")
 ```{r Select the Upper Neuse HUC 8}
 #Read the shapefile into an sf dataframe
 
-
+huc8_sf2 <- st_read('./Data/Spatial/NCHUC8.shp') %>%
+  filter(SUBBASIN == 'Upper Neuse')
 
 #Create a map
+
+mapview(huc8_sf, col.region = 'orange', alpha.regions = 1)+
+  mapView(huc8_sf2, col.region = 'purple', alpha.regions = 1)
 
 
 ```
@@ -115,17 +130,33 @@ The URL '<https://raw.githubusercontent.com/ENV859/EnviroAtlasData/main/Wind_Ene
 ```{r}
 #Compute HUC8 wind energy
 
+wind_raw <- read.csv('https://raw.githubusercontent.com/ENV859/EnviroAtlasData/main/Wind_Energy.csv', colClasses = c('HUC_12' = 'factor')) %>%
+  mutate(HUC_8 = substr(HUC_12,1,8)) %>%
+  group_by(HUC_8)%>%
+  summarize(SumWindEnergy = sum(AvgWindEnergy))
 
+
+#Check structure
+
+str(wind_raw)
 
 
 #Join to HUC_8 features
 
-
+huc8_sf_join_ <- merge(x = huc8_sf,
+                           y = wind_raw,
+                           by.x = "HUC_8",
+                           by.y = "HUC_8")
 
 
 #View the outputs
 
+ggplot (data = huc8_sf_join_) +
+  geom_sf(aes(fill = SumWindEnergy))
 
+#or 
+
+mapView(huc8_sf_join_, zcol = "SumWindEnergy")
 
 ```
 
@@ -135,15 +166,19 @@ Aggregate the HUC_8 data on the `DWQ_Basin` attribute, computing the sum of the 
 ```{r Aggregate the HUC data on an attribute, saving as huc2_sf}
 #List the unique values in the DWQ_Basin field
 
-
+unique(huc8_sf$DWQ_Basin)
 
 #Summarize on DWQ Basin value
 
-
+huc2_sf <- huc8_sf %>%
+  group_by(DWQ_Basin) %>%
+  summarize(
+    acres = sum(ACRES),
+    sq_miles = sum(SQ_MILES))
 
 #Map the data
 
-
+mapView(huc2_sf)
 ```
 
 ## 3.2 Transforming coordinate reference systems of datasets
