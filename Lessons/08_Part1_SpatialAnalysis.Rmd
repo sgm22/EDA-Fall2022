@@ -120,6 +120,16 @@ EPAair.sf <- EPAair.sites %>%
 
 #View the data using the methods above...
 
+#View using sf plot
+plot(EPAair.sf['geometry'],pch=16)
+
+#View using ggplot
+ggplot(data=EPAair.sf) + geom_sf()
+
+#View using mapview
+mapview(EPAair.sf)
+
+
 ```
 
 ### EXERCISE: Creating a spatial dataframe from known coordinates
