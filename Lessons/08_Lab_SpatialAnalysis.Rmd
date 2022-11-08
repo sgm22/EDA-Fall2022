@@ -97,6 +97,7 @@ mapView(huc8_sf, zcol = "ACRES")
 colnames(huc8_sf)
 
 mapView(huc8_sf)
+
 ```
 
 ### EXERCISE 2.2.2: Read a subset of data into a spatial dataframe and map it
