@@ -152,6 +152,10 @@ include "dec_lat_va" and "dec_long_va".
 
 #13. Plot the gage locations atop the county features
 
+ggplot() +
+  geom_sf(data = uscounty, aes(fill = STATEFP)) +
+  geom_sf(data = NWISsite.sf) +
+  ggtitle("NWIS Gage Locations in Nebraska", subtitle = "Sashoy Milton")
 
 ```
 
@@ -171,17 +175,29 @@ Lastly, we want to attach some gage height data to our site locations. I've cons
 ```{r}
 #14. Read the site flow data into a data frame
 
+NWISsite_flow_data <- read.csv("./Data/Raw/NWIS_SiteFlowData_NE_RAW.csv", stringsAsFactors = TRUE)
 
 #15. Show the column names
 
+colnames(NWISsite_flow_data)
 
 #16. Join the flow data to our NWIS gage location spatial dataframe
+
+NWISsite_flow_gage.locations <- NWISsite.sf %>%
+  full_join(NWISsite_flow_data, by = c("site_no", "station_nm")) %>%
+  drop_na()
+
+head (NWISsite_flow_gage.locations) #View dataset 
 
 
 #17. Show the column names of the joined dataset
 
+colnames(NWISsite_flow_gage.locations)
+
 
 #18. Show the dimensions of this joined dataset
+
+dim(NWISsite_flow_gage.locations)
 
 
 ```
@@ -195,6 +211,9 @@ Now we can examine where the flooding appears most acute by visualizing gage hei
 ```{r}
 #Map the points, sized by gage height
 
+ggplot() +
+  geom_sf(data = uscounty, aes(fill = STATEFP)) +
+  geom_sf(data = NWISsite_flow_gage.locations, aes(size = gage_ht))
 
 ```
 
@@ -213,9 +232,13 @@ Up next we will do some spatial analysis with our data. To prepare for this, we 
 ```{r}
 #20 Transform the counties and gage location datasets to UTM Zone 14
 
+uscounty_utm <- st_transform(uscounty, crs = 32614)
+NWISsite.sf_utm <- st_transform(NWISsite.sf, crs = 32614)
 
 #21 Plot the data
 
+mapView(uscounty_utm)
+mapView(NWISsite.sf_utm)
 
 ```
 
