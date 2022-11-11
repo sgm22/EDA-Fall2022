@@ -42,7 +42,7 @@ library(tidyverse)
 library(sf)
 library (leaflet)
 library(mapview)
-
+library(RColorBrewer)
 
 ```
 
@@ -237,8 +237,8 @@ NWISsite.sf_utm <- st_transform(NWISsite.sf, crs = 32614)
 
 #21 Plot the data
 
-mapView(uscounty_utm)
-mapView(NWISsite.sf_utm)
+mapView(uscounty_utm, zcol = "COUNTYFP")
+mapView(NWISsite.sf_utm, zcol = "station_nm")
 
 ```
 
@@ -257,12 +257,39 @@ Now let's zoom into a particular county and examine the gages located there.
 ```{r}
 #22 Select the county
 
+uscounty_Lanchester <- uscounty_utm %>% 
+  filter(NAME == "Lancaster") 
+
 
 #23 Select gages within the selected county
 
+Gage_sites_Lanchester <- st_intersects(uscounty_Lanchester, NWISsite.sf_utm,
+                                       sparse = FALSE)
+
+
+selLanchester <- uscounty_Lanchester[Gage_sites_Lanchester,]
 
 #24 Plot
 
+ggplot() +
+  geom_sf(data = uscounty) +
+  geom_sf(data = NWISsite.sf) 
 
+
+mapview(uscounty_utm,col.region = 'grey', alpha.regions = 1 )+
+  mapView(uscounty_Lanchester, col.region = 'blue', alpha.regions = 1) +
+  mapView(Gage_sites_Lanchester[resultMask,])
+
+
+#Create a boolean mask 
+resultMask <- st_intersects(counties_sf_utm, 
+                            theSite_sfc_transformed,
+                            sparse = FALSE) #The `sparse` option returns a Boolean mask
+
+#Filter the counties dataset using the boolean mask
+selCounties <- counties_sf_utm[resultMask,]
+
+#Map the results
+mapView(counties_sf[resultMask,])
 
 ```
