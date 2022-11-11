@@ -153,7 +153,7 @@ include "dec_lat_va" and "dec_long_va".
 #13. Plot the gage locations atop the county features
 
 ggplot() +
-  geom_sf(data = uscounty, aes(fill = STATEFP)) +
+  geom_sf(data = uscounty, fill = " light green") +
   geom_sf(data = NWISsite.sf) +
   ggtitle("NWIS Gage Locations in Nebraska", subtitle = "Sashoy Milton")
 
@@ -212,8 +212,9 @@ Now we can examine where the flooding appears most acute by visualizing gage hei
 #Map the points, sized by gage height
 
 ggplot() +
-  geom_sf(data = uscounty, aes(fill = STATEFP)) +
-  geom_sf(data = NWISsite_flow_gage.locations, aes(size = gage_ht))
+  geom_sf(data = uscounty, fill = "white") +
+  geom_sf(data = NWISsite_flow_gage.locations, aes(color = gage_ht, size = gage_ht))+
+  scale_fill_viridis_b()
 
 ```
 
@@ -237,8 +238,8 @@ NWISsite.sf_utm <- st_transform(NWISsite.sf, crs = 32614)
 
 #21 Plot the data
 
-mapView(uscounty_utm, zcol = "COUNTYFP")
-mapView(NWISsite.sf_utm, zcol = "station_nm")
+mapView(uscounty_utm, zcol = "COUNTYFP") +
+mapView(NWISsite.sf_utm, col.region = 'black', alpha.regions = 1)
 
 ```
 
@@ -267,29 +268,15 @@ Gage_sites_Lanchester <- st_intersects(uscounty_Lanchester, NWISsite.sf_utm,
                                        sparse = FALSE)
 
 
-selLanchester <- uscounty_Lanchester[Gage_sites_Lanchester,]
+selLanchester <- NWISsite.sf_utm[Gage_sites_Lanchester,]
+
 
 #24 Plot
 
-ggplot() +
-  geom_sf(data = uscounty) +
-  geom_sf(data = NWISsite.sf) 
-
 
 mapview(uscounty_utm,col.region = 'grey', alpha.regions = 1 )+
-  mapView(uscounty_Lanchester, col.region = 'blue', alpha.regions = 1) +
-  mapView(Gage_sites_Lanchester[resultMask,])
+  mapView(uscounty_Lanchester, col.region = 'green', alpha.regions = 1) +
+  mapView(NWISsite.sf[Gage_sites_Lanchester,])
 
-
-#Create a boolean mask 
-resultMask <- st_intersects(counties_sf_utm, 
-                            theSite_sfc_transformed,
-                            sparse = FALSE) #The `sparse` option returns a Boolean mask
-
-#Filter the counties dataset using the boolean mask
-selCounties <- counties_sf_utm[resultMask,]
-
-#Map the results
-mapView(counties_sf[resultMask,])
 
 ```
