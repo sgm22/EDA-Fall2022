@@ -239,7 +239,7 @@ NWISsite.sf_utm <- st_transform(NWISsite.sf, crs = 32614)
 
 #21 Plot the data
 
-mapView(uscounty_utm, zcol = "COUNTYFP") +
+mapView(uscounty_utm, zcol = "COUNTYFP", legend = FALSE) +
 mapView(NWISsite.sf_utm, col.region = 'black', alpha.regions = 1)
 
 ```
@@ -274,10 +274,8 @@ selLanchester <- NWISsite.sf_utm[Gage_sites_Lanchester,]
 
 #24 Plot
 
-
 mapview(uscounty_utm,col.region = 'grey', alpha.regions = 1 )+
   mapView(uscounty_Lanchester, col.region = 'green', alpha.regions = 1) +
   mapView(NWISsite.sf[Gage_sites_Lanchester,])
-
 
 ```
