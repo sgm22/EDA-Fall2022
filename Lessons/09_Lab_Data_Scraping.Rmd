@@ -106,6 +106,23 @@ ggplot(gage_data,aes(x=datetime,y=discharge_cfs)) +
 
 ```{r pull.and.plot.other.discharge.data}
 
+theURL <- 'https://waterdata.usgs.gov/nwis/uv?search_site_no=02085070&period=24&format=rdb'
+
+#Get the data, which starts on line 30
+gage_data <- read.table(theURL,skip = 29,header=TRUE,sep='\t',stringsAsFactors = T) 
+
+#Update the column headers
+colnames(gage_data) = c("agency_cd", "site_no", "datetime", "tz_cd",
+                        "discharge_cfs", "89192_00060_cd", "gage_ht_ft", "89193_00065_cd")
+#Tidy the data
+gage_data <- gage_data %>% 
+  select(datetime, discharge_cfs,gage_ht_ft) %>% 
+  mutate(datetime = ymd_hm(datetime))
+
+#Plot
+ggplot(gage_data,aes(x=datetime,y=discharge_cfs)) + 
+  geom_line() +
+  labs(x = "Date",y = "Discharge (cfs)")
 ```
 
 
@@ -132,7 +149,7 @@ scode = "00003"  #mean
 
 #Identify start and end dates
 start.date = "1930-10-01"
-end.date = "2021-03-21"
+end.date = "2022-11-14"
 
 #Load in data using the package's "readNWISdv" function
 neuse <- readNWISdv(siteNumbers = siteNo, 
@@ -167,7 +184,9 @@ You'll also need to look up the IDs of the variables you want to extract. Those 
 
 ```{r}
 #Apply the API key
-#census_api_key("d4ad7874c996c7a83fec0a81466309ddc07d8e22a", install = TRUE)
+census_api_key("d4ad7874c996c7a83fec0a81466309ddc07d8e22a", install = TRUE)
+
+readRenviron("~/.Renviron")
 
 nc_pop <- 
   get_acs(geography = "county",
