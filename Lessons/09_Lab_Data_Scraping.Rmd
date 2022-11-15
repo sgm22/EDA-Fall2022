@@ -244,24 +244,86 @@ scrape.it <- function(the_year){
                     paste('https://www.eia.gov/electricity/state/archive',the_year,'/'))
 
   #Fetch the website
+  
+  the_website <- read_html('https://www.eia.gov/electricity/state/')
+ 
   #<enter code from above here> 
   
-  #Scrape the data
-  #<enter code from above here>
+  states <- 'td:nth-child(1)'
+retail.price <- 'td:nth-child(2)'
+net.summer.capacity <- 'td:nth-child(3)'
+net.generation <- 'td:nth-child(4)'
+total.retail.sales <- 'td:nth-child(5)'
+
+
+  
+  #Scrape the data, pull tag directy or pull the names created above
+ 
+states <- the_website %>% html_nodes('td:nth-child(1)') %>% html_text()
+retail.price <- the_website %>%   html_nodes('td:nth-child(2)') %>%  html_text()
+net.summer.capacity <- the_website %>% html_nodes('td:nth-child(3)') %>% html_text()
+ net.generation <- the_website %>% html_nodes('td:nth-child(4)') %>% html_text()
+ total.retail.sales <- the_website %>% html_nodes('td:nth-child(5)') %>% html_text()
   
   #Convert to dataframe
-  #<enter code from above here>
+ 
+ energy_data <- data.frame(
+   states, retail.price, net.summer.capacity,
+   net.generation, total.retail.sales
+ )
+ 
   
   #Return the dataframe
-  return(the_df)
+  return(energy_data)
 }
 
 
 # Use the above function to scrape data for 2017
 
+scrape.it <- function(the_year){
+  #Get the proper url
+  the_url <- ifelse(the_year==2017,
+                    'https://www.eia.gov/electricity/state/',
+                    paste0('https://www.eia.gov/electricity/state/archive',the_year,'/'))
+
+  #Fetch the website
+  
+  the_website <- read_html('https://www.eia.gov/electricity/state/')
+ 
+  #<enter code from above here> 
+  
+  states <- 'td:nth-child(1)'
+retail.price <- 'td:nth-child(2)'
+net.summer.capacity <- 'td:nth-child(3)'
+net.generation <- 'td:nth-child(4)'
+total.retail.sales <- 'td:nth-child(5)'
+
+
+  
+  #Scrape the data, pull tag directy or pull the names created above
+ 
+states <- the_website %>% html_nodes('td:nth-child(1)') %>% html_text()
+retail.price <- the_website %>%   html_nodes('td:nth-child(2)') %>%  html_text()
+net.summer.capacity <- the_website %>% html_nodes('td:nth-child(3)') %>% html_text()
+ net.generation <- the_website %>% html_nodes('td:nth-child(4)') %>% html_text()
+ total.retail.sales <- the_website %>% html_nodes('td:nth-child(5)') %>% html_text()
+  
+  #Convert to dataframe
+ 
+ energy_data <- data.frame(
+   states, retail.price, net.summer.capacity,
+   net.generation, total.retail.sales
+ ) %>%
+   mutate(year = the_year)
+ 
+  
+  #Return the dataframe
+  return(energy_data)
+}
 
 # Map the function to scrape data from 2017 to 2019
 
+big_df <- map(seq(2015,2018), scape.it) %>% bind_rows()
 
 ```
 
