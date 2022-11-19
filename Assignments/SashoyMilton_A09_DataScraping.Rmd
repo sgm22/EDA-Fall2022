@@ -199,7 +199,7 @@ ggplot(local_water_supply_2015, aes(x = Date, y = max.withdrawals.mgd)) +
   geom_line(aes(group = 1)) +
   ylab ("Maximum Daily Withdrawals/ mgd") +
   xlab ("Month of the Year") +
-  labs(title = paste ("Max Daily Water Withdrawals 2015"))
+  labs(title = ("Max Daily Water Withdrawals 2015")
 
 ```
 
