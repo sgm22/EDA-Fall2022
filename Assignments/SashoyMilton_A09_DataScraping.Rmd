@@ -104,7 +104,7 @@ max.withdrawals.mgd <- durham_muncipal %>% html_nodes('th~ td+ td') %>% html_tex
 ```{r create.a.dataframe.from.scraped.data}
 #4 Create data-frame
 
-local_water_supply <- data.frame("Month" = c("Jan", "May", "Sept", "Feb", "Jun",
+local_water_supply.2021 <- data.frame("Month" = c("Jan", "May", "Sept", "Feb", "Jun",
                                   "Oct", "Mar", "Jul", "Nov", "Apr", "Aug","Dec"),
                              "Year" = rep(2021,12),
                              "Max_Withdrawals_mgd" = as.numeric(max.withdrawals.mgd)) %>% 
@@ -114,22 +114,22 @@ local_water_supply <- data.frame("Month" = c("Jan", "May", "Sept", "Feb", "Jun",
          Date = my(paste(Month,"-",Year)))
 
 
-#Sort by Month 
+local_water_supply.2021 #Check dataset
 
-local_water_supply_reorder <- local_water_supply %>% arrange(factor(Month, levels = c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov", "Dec")))
+#Check variable type
 
-local_water_supply_reorder #Check dataset
+class(local_water_supply.2021$Date)
 
-local_water_supply_reorder$Date <- ymd(local_water_supply_reorder$Date)
+class(local_water_supply_reorder$Max_Withdrawals_mgd)
 
 
 #5. Create line plot of maximum daily withdrawals
 
-ggplot(local_water_supply_reorder, aes(x = Date, y = max.withdrawals.mgd)) +
-  geom_line(aes(group = 1)) +
+ggplot(local_water_supply.2021, aes(x = Date, y = max.withdrawals.mgd, group = 1)) +
+  geom_line() +
   ylab ("Maximum Daily Withdrawals/ mgd") +
-  xlab ("Month of the Year") +
-  labs(title = paste ("Max Daily Water Withdrawals"))
+  xlab ("Months of the Year") +
+  labs(title ="Max Daily Water Withdrawals 2021 in Durham")
 
 
 ```
@@ -144,15 +144,9 @@ scrape_website <- function(the_pswid,the_year){
   
   
 #Retrieve the website contents 
-  
-#read_html('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2021')
-  
-#the_website <- read_html(paste0('https://www.ncwater.org/WUDC/app/WWATR/report/view/', 
-#                                  the_facility, '/', the_year))
     
 the_website <-read_html(paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=',the_pswid,'&year=',the_year))
-
-  
+                               
 #Set the element address variables 
   water_system_name_tag <- 'div+ table tr:nth-child(1) td:nth-child(2)'
   pswid_tag <- 'td tr:nth-child(1) td:nth-child(5)'
@@ -170,15 +164,15 @@ max.withdrawals.mgd <- the_website %>% html_nodes(max_withdrawal_tag) %>% html_t
                                   "Oct", "Mar", "Jul", "Nov", "Apr", "Aug","Dec"),
                              "Year" = rep(2015,12),
                              "Max_Withdrawals_mgd" = as.numeric(max.withdrawals.mgd)) %>% 
-  mutate(Water.System.Name =  rep(water.system.name,12),
-         PSWID = rep(pswid,12),
-         Ownership = rep(ownership,12),
+ mutate(Water.System.Name = !!water.system.name,
+         PSWID = !!pswid,
+         Ownership = !!ownership,
          Date = my(paste(Month,"-",Year)))
  
-water_supply_reorder <- water_supply %>% arrange(factor(Month, levels = c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov", "Dec")))
+ Sys.sleep(1)
 
   #Return the dataframe
-  return(water_supply_reorder)
+  return(water_supply)
 }
 
 ```
@@ -190,16 +184,16 @@ water_supply_reorder <- water_supply %>% arrange(factor(Month, levels = c("Jan",
 
 # Extract Max Daily Withdrawals for Durham
 
-local_water_supply_2015 <- scrape_website(03-32-010,2015)
-local_water_supply_2015
+local_water_supply.2015 <- scrape_website('03-32-010',2015)
+local_water_supply.2015 # View data set
 
 # Line plot of maximum daily withdrawals 
 
-ggplot(local_water_supply_2015, aes(x = Date, y = max.withdrawals.mgd)) +
-  geom_line(aes(group = 1)) +
+ggplot(local_water_supply.2015, aes(x = Date, y = Max_Withdrawals_mgd, group = 1)) +
+  geom_line() +
   ylab ("Maximum Daily Withdrawals/ mgd") +
   xlab ("Month of the Year") +
-  labs(title = ("Max Daily Water Withdrawals 2015")
+  labs(title = ("Max Daily Water Withdrawals 2015 in Durham"))
 
 ```
 
@@ -209,8 +203,19 @@ ggplot(local_water_supply_2015, aes(x = Date, y = max.withdrawals.mgd)) +
 #8
 ##Extract Asheville data
 
-local_water_supply_2015_Asheville <- scrape_website(01-11-010,2015)
-local_water_supply_2015_Asheville
+local_water_supply_2015_Asheville <- scrape_website('01-11-010',2015)
+local_water_supply_2015_Asheville #View data set
+
+colnames(local_water_supply_2015_Asheville)
+#Create a plot that compares Asheville's to Durham's water withdrawals
+
+ggplot(local_water_supply_2015_Asheville, aes(x=Date, y=Max_Withdrawals_mgd, group = 1, color = Water.System.Name))+
+  geom_line() +
+  geom_line(data = local_water_supply.2015, aes(x = Date, y = Max_Withdrawals_mgd, group = 1, color = water.system.name)) +
+    ylab ("Maximum Daily Withdrawals/ mgd") +
+  xlab ("Month of the Year") +
+  labs(title = ("Max Daily Water Withdrawals 2015 in Durham and Asheville"),
+       color = "Water System Name")
 ```
 
 
@@ -219,8 +224,44 @@ local_water_supply_2015_Asheville
 >TIP: See Section 3.2 in the "09_Data_Scraping.Rmd" where we apply "map2()" to iteratively run a function over two inputs. Pipe the output of the map2() function to `bindrows()` to combine the dataframes into a single one. 
 
 ```{r fetch.and.plot.Asheville.multiyear.data}
+
 #9
 
+#Subset the facilities
+#the_facility_ids_subset <-sample(the_facility_ids,20)
+
+#Create a list of the year we want, the same length as the vector above
+#the_years <- rep.int(2020,length(the_facility_ids_subset))
+
+###########
+
+#Set the inputs to scrape years 2015 to 2020 for the Asheville site "01-11-010"
+the_years = rep(2010:2019)
+
+#Subset the facilities
+#the_years_subset <- sample(the_years,10)
+
+my_facility = rep('01-11-010',10)
+
+#Use lapply to apply the scrape function
+# the_dfs <- lapply(X = the_years,
+#                 FUN = scrape_website,
+#                the_facility= my_facility)
+
+#OR, use purrr's map function
+the_dfs <- map2(my_facility,the_years,scrape_website)
+
+#Conflate the returned dataframes into a single dataframe
+the_df <- bind_rows(the_dfs)
+
+#Plot, because it's fun and rewarding
+ggplot(the_df,aes(x=Date,y=Avg_Withdrawals_mgd)) + 
+  geom_line() + 
+  geom_smooth(method="loess",se=FALSE) +
+  labs(title = paste("2020 Water usage data for",pswid),
+       subtitle = water.system.name,
+       y="Withdrawal (mgd)",
+       x="Date")
 
 ```
 
