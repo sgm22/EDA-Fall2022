@@ -231,7 +231,7 @@ scrape.it <- function(the_year, the_facility){
   
   #Scrape the data items
   the_registrant <- the_website %>% html_nodes(the_registrant_tag) %>% html_text()
-  the_facility_name <- the_website %>%   html_nodes(the_facility_name_tag) %>%  html_text()
+  the_facility_name <- the_website %>%html_nodes(the_facility_name_tag) %>%  html_text()
   the_facility_type <- the_website %>% html_nodes(the_facility_id_tag) %>% html_text()
   avg_withdrawals <- the_website %>% html_nodes(the_data_tag) %>% html_text()
   

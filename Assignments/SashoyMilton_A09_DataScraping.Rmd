@@ -7,6 +7,10 @@ editor_options:
   chunk_output_type: console
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
 ## OVERVIEW
 
 This exercise accompanies the lessons in Environmental Data Analytics on data scraping. 
@@ -59,7 +63,9 @@ Indicate this website as the as the URL to be scraped. (In other words, read the
 ```{r set.the.scraping.website}
 #2
 
-durham_muncipal <- read_html('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2021')
+durham_muncipal <- read_html
+('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2021')
+
 durham_muncipal
 
 ```
@@ -80,7 +86,7 @@ In the code chunk below scrape these values, assigning them to four separate var
 
 ```{r scrape.the.data}
 
-#3 Scaped and assigned values
+#3 Scraped and assigned values
 
 water.system.name <- durham_muncipal %>% html_nodes('div+ table tr:nth-child(1) td:nth-child(2)') %>% html_text()
   
@@ -120,7 +126,7 @@ local_water_supply.2021 #Check dataset
 
 class(local_water_supply.2021$Date)
 
-class(local_water_supply_reorder$Max_Withdrawals_mgd)
+class(local_water_supply.2021$Max_Withdrawals_mgd)
 
 
 #5. Create line plot of maximum daily withdrawals
@@ -162,7 +168,7 @@ max.withdrawals.mgd <- the_website %>% html_nodes(max_withdrawal_tag) %>% html_t
 #Convert to a dataframe
  water_supply <- data.frame("Month" = c("Jan", "May", "Sept", "Feb", "Jun",
                                   "Oct", "Mar", "Jul", "Nov", "Apr", "Aug","Dec"),
-                             "Year" = rep(2015,12),
+                             "Year" = rep(the_year,12),
                              "Max_Withdrawals_mgd" = as.numeric(max.withdrawals.mgd)) %>% 
  mutate(Water.System.Name = !!water.system.name,
          PSWID = !!pswid,
@@ -227,42 +233,25 @@ ggplot(local_water_supply_2015_Asheville, aes(x=Date, y=Max_Withdrawals_mgd, gro
 
 #9
 
-#Subset the facilities
-#the_facility_ids_subset <-sample(the_facility_ids,20)
-
-#Create a list of the year we want, the same length as the vector above
-#the_years <- rep.int(2020,length(the_facility_ids_subset))
-
-###########
-
 #Set the inputs to scrape years 2015 to 2020 for the Asheville site "01-11-010"
 the_years = rep(2010:2019)
+my_facility = '01-11-010'
 
-#Subset the facilities
-#the_years_subset <- sample(the_years,10)
+# Map function
 
-my_facility = rep('01-11-010',10)
-
-#Use lapply to apply the scrape function
-# the_dfs <- lapply(X = the_years,
-#                 FUN = scrape_website,
-#                the_facility= my_facility)
-
-#OR, use purrr's map function
 the_dfs <- map2(my_facility,the_years,scrape_website)
 
 #Conflate the returned dataframes into a single dataframe
 the_df <- bind_rows(the_dfs)
 
-#Plot, because it's fun and rewarding
-ggplot(the_df,aes(x=Date,y=Avg_Withdrawals_mgd)) + 
+#Plot Asheville's max daily withdrawal by months for the years 2010 thru 2019
+ggplot(the_df,aes(x=Date,y=Max_Withdrawals_mgd)) + 
   geom_line() + 
   geom_smooth(method="loess",se=FALSE) +
-  labs(title = paste("2020 Water usage data for",pswid),
-       subtitle = water.system.name,
-       y="Withdrawal (mgd)",
+  labs(title = paste("2010 - 2019 Maximum Water Withdrawals Data for Asheville"),
+       y= "Maximum Withdrawal (mgd)",
        x="Date")
 
 ```
 
->Question: Just by looking at the plot (i.e. not running statistics), does Asheville have a trend in water usage over time?
+>Question: Just by looking at the plot (i.e. not running statistics), does Asheville have a trend in water usage over time? Yes, Asheville does have a trend in water usage over time. The maximum water usuage was relatively constant at about 22 mgd from the year 2010 to around 2017, when a sharp increase in maximum withdrawal was seen up to about 26 mgd.
