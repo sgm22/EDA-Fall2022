@@ -45,10 +45,10 @@ library(dplyr)
 
 # Set theme
 
-mytheme <- theme_classic(base_size = 14) +
-  theme(axis.text = element_text(color = "black"), 
-        legend.position = "top")
-theme_set(mytheme)
+my_theme <- theme_bw(base_size = 12) + theme(axis.text = element_text(color = "black"),
+legend.position = "top", legend.justification = "center") +
+theme(plot.title = element_text(hjust = 0.5))
+theme_set(my_theme)
 
 
 ```
@@ -63,8 +63,8 @@ Indicate this website as the as the URL to be scraped. (In other words, read the
 ```{r set.the.scraping.website}
 #2
 
-durham_muncipal <- read_html
-('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2021')
+durham_muncipal <-
+read_html('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2021')
 
 durham_muncipal
 
@@ -88,13 +88,17 @@ In the code chunk below scrape these values, assigning them to four separate var
 
 #3 Scraped and assigned values
 
-water.system.name <- durham_muncipal %>% html_nodes('div+ table tr:nth-child(1) td:nth-child(2)') %>% html_text()
+water.system.name <- durham_muncipal %>%
+  html_nodes('div+ table tr:nth-child(1) td:nth-child(2)') %>% html_text()
   
-pswid <- durham_muncipal %>% html_nodes('td tr:nth-child(1) td:nth-child(5)') %>% html_text()
+pswid <- durham_muncipal %>% 
+  html_nodes('td tr:nth-child(1) td:nth-child(5)')%>% html_text()
   
-ownership <- durham_muncipal %>% html_nodes('div+ table tr:nth-child(2) td:nth-child(4)') %>% html_text()
+ownership <- durham_muncipal %>% 
+  html_nodes('div+ table tr:nth-child(2) td:nth-child(4)')%>% html_text()
   
-max.withdrawals.mgd <- durham_muncipal %>% html_nodes('th~ td+ td') %>% html_text()
+max.withdrawals.mgd <- durham_muncipal %>%
+  html_nodes('th~ td+ td') %>% html_text()
 
 ```
 
@@ -151,7 +155,8 @@ scrape_website <- function(the_pswid,the_year){
   
 #Retrieve the website contents 
     
-the_website <-read_html(paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=',the_pswid,'&year=',the_year))
+the_website <-read_html(paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=',
+                               the_pswid,'&year=',the_year))
                                
 #Set the element address variables 
   water_system_name_tag <- 'div+ table tr:nth-child(1) td:nth-child(2)'
@@ -213,11 +218,14 @@ local_water_supply_2015_Asheville <- scrape_website('01-11-010',2015)
 local_water_supply_2015_Asheville #View data set
 
 colnames(local_water_supply_2015_Asheville)
+
 #Create a plot that compares Asheville's to Durham's water withdrawals
 
-ggplot(local_water_supply_2015_Asheville, aes(x=Date, y=Max_Withdrawals_mgd, group = 1, color = Water.System.Name))+
+ggplot(local_water_supply_2015_Asheville, aes(x=Date, y=Max_Withdrawals_mgd, 
+                                      group = 1, color = Water.System.Name))+
   geom_line() +
-  geom_line(data = local_water_supply.2015, aes(x = Date, y = Max_Withdrawals_mgd, group = 1, color = water.system.name)) +
+  geom_line(data = local_water_supply.2015, aes(x = Date, y = Max_Withdrawals_mgd, 
+                                      group = 1, color = water.system.name)) +
     ylab ("Maximum Daily Withdrawals/ mgd") +
   xlab ("Month of the Year") +
   labs(title = ("Max Daily Water Withdrawals 2015 in Durham and Asheville"),
